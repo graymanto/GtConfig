@@ -1,1 +1,149 @@
-:Users:graymant:.vimrc.after
+inoremap jj <Esc>
+:nmap <C-tab> :bnext<cr>
+:nmap <C-S-tab> :bprevious<cr>
+:nnoremap <leader><leader> <C-^>
+:nmap <leader>sc :SyntasticCheck<CR>
+:nmap <leader>lc :lclose<CR>
+
+set incsearch
+set hlsearch
+set ignorecase
+set number
+
+color desert
+
+let g:syntastic_enable_perl_checker = 1
+
+set nocompatible
+filetype off
+
+"""""""""""""" Vundle """""""""""""""""""""
+
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+Plugin 'gmarik/vundle'
+
+"Plugin 'L9'
+"Plugin 'FuzzyFinder'
+"Plugin 'Valloric/YouCompleteMe'
+"Plugin 'marijnh/tern_for_vim'
+"Plugin 'othree/html5.vim'
+"Plugin 'tpope/vim-ragtag'
+"Plugin 'tpope/vim-surround'
+"Plugin 'tpope/vim-repeat'
+"Plugin 'tpope/vim-dispatch'
+"Plugin 'derekwyatt/vim-scala'
+"Plugin 'scrooloose/syntastic'
+"Plugin 'spf13/PIV'
+"Plugin 'bling/vim-airline'
+"Plugin 'airblade/vim-gitgutter'
+
+filetype plugin indent on
+filetype plugin on
+
+""""""""""""" Auto save """"""""""""""""""
+
+"augroup myvimrc
+"au!
+"au BufWritePost .vimrc,_vimrc,vimrc,.gvimrc,_gvimrc,gvimrc,.vimrc.after so $MYVIMRC | if has('gui_running') | so $MYGVIMRC | endif
+"augroup END
+
+""""""""""""" Manual auto loads that aren't working """"""""""""""""""
+
+source ~/.janus/vim-go/autoload/go/command.vim
+source ~/.janus/vim-go/autoload/go/complete.vim
+source ~/.janus/vim-go/autoload/go/package.vim
+source ~/.janus/vim-go/autoload/go/tool.vim
+
+"""""""""""" You Complete Me options """""""""""""
+
+let g:ycm_autoclose_preview_window_after_completion = 1
+let g:ycm_autoclose_preview_window_after_insertion = 1
+let g:ycm_add_preview_to_completeopt = 1
+
+""""""""""" Syntastic options """""""""""""""""""
+
+let g:syntastic_html_validator_parser = 'html5'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""
+
+" set completeopt-=preview
+set hidden
+
+:command! R !./%
+
+set guifont=Source\ Code\ Pro\ Semibold:h12
+
+let g:EclimCompletionMethod = 'omnifunc'
+
+"au BufRead * try | execute "compiler ".&filetype | catch /./ | endtry
+
+"set tags=tags;/
+
+
+""""""""""" Html and Css settings """""""""""""""
+
+autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+autocmd FileType html setlocal shiftwidth=2 tabstop=2
+
+autocmd FileType php setlocal shiftwidth=4 tabstop=4
+
+autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+
+vmap ,x :!tidy -q -i --show-errors 0<CR>
+:command! Thtml :%!~/bin/tidy -config ~/exampletidyconfig -q -i --show-errors 0
+:nmap <leader>fh :Thtml<CR>
+
+""""""""""" PHP settings """""""""""""""
+
+func! ParsePHP()
+    :exe 'g/^\_$\n\_^$/d'
+    :%s/^[\ \t]*\n/$x = 'asdflkjlkjadfdsdfsdfsdfsdf';\r/ge
+    :set srr=>
+    :exe '%!php_beautifier -o - --filters "Pear() ArrayNested()"'
+    :%s/$x = 'asdflkjlkjadfdsdfsdfsdfsdf';//ge
+    :FixWhitespace
+endfunc
+
+map <leader>fphp :call ParsePHP()<CR>
+
+""""""""""" Jinja """""""""""""""
+
+let g:htmljinja_disable_detection = 0
+
+""""""""""" Python settings """""""""""""""
+
+autocmd FileType py nmap <leader>fef :PymodeLintAuto
+
+""""""""""" Scala settings """""""""""""""
+
+au BufEnter *.scala setl formatprg=scalariform
+au FileType scala setl equalprg=scalariform
+
+""""""""""" Go settings """""""""""""""
+
+au FileType go setl equalprg=gofmt
+autocmd FileType html set omnifunc=go#complete#Complete
+
+""""""""""" Silverstripe settings """""""""""""""
+
+au BufNewFile,BufRead *.ss set filetype=html
+
+""""""""""" MacVim GUI mode """""""""""""""
+
+if has("gui_macvim")
+  set fuoptions=maxvert,maxhorz
+  set noballooneval
+
+  " resize current buffer by +/- 5
+  nnoremap <M-Right> :vertical resize +5<CR>
+  nnoremap <M-Left>  :vertical resize -5<CR>
+  nnoremap <M-Up>    :resize -5<CR>
+  nnoremap <M-Down>  :resize +5<CR>
+
+  " Automatically resize splits
+  " when resizing MacVim window
+  autocmd VimResized * wincmd =
+endif

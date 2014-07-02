@@ -1,1 +1,11 @@
-:Users:graymant:.vimrc.before
+:let mapleader = ","
+
+call janus#disable_plugin('supertab')
+
+"call janus#disable_plugin('syntastic')
+"
+"
+""""""""""" Go settings """""""""""""""
+
+let $GOPATH="/Users/graymant/Documents/Development/go"
+let $PATH.= ':/Users/graymant/Documents/Development/go/bin:/usr/local/go/bin'
