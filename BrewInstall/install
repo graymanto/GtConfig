@@ -1,0 +1,54 @@
+#! /bin/bash
+brew install ack
+brew install astyle
+brew install bazaar
+brew install binutils
+brew install boost
+brew install brew-cask
+brew install cask
+brew install cmake
+brew install coreutils
+brew install ctags
+brew install diffutils
+brew install emacs
+brew install findutils
+brew install freetype
+brew install gdbm
+brew install gnu-sed
+brew install graphicsmagick
+brew install hydra-cli
+brew install imagemagick
+brew install ino
+brew install jpeg
+brew install leptonica
+brew install libpng
+brew install libtiff
+brew install libtool
+brew install mercurial
+brew install node
+brew install openssl
+brew install pdftohtml
+brew install picocom
+brew install pkg-config
+brew install poco
+brew install readline
+brew install sbt
+brew install sqlite
+brew install tesseract
+brew install wget
+brew install xz
+brew install curl
+brew cask install macvim
+brew cask install cheatsheet
+brew cask install darktable
+brew cask install gimp
+brew cask install macdown
+brew cask install mou
+brew cask install phoenix
+brew cask install seashore
+brew cask install skitch
+brew cask install skype
+brew cask install utorrent
+brew cask install shortcat
+brew cask install alfred
+brew cask install google-chrome
