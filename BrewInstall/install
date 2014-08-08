@@ -41,6 +41,7 @@ brew install curl
 brew install docker
 brew install boot2docker
 brew cask install macvim
+brew cask install iterm2
 brew cask install cheatsheet
 brew cask install darktable
 brew cask install gimp
