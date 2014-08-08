@@ -52,3 +52,4 @@ brew cask install utorrent
 brew cask install shortcat
 brew cask install alfred
 brew cask install google-chrome
+brew cask install arduino
