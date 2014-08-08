@@ -38,6 +38,8 @@ brew install tesseract
 brew install wget
 brew install xz
 brew install curl
+brew install docker
+brew install boot2docker
 brew cask install macvim
 brew cask install cheatsheet
 brew cask install darktable
@@ -53,3 +55,5 @@ brew cask install shortcat
 brew cask install alfred
 brew cask install google-chrome
 brew cask install arduino
+brew cask install vagrant
+brew cask install parallels
