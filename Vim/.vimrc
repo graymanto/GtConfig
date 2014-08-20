@@ -41,6 +41,18 @@ nnoremap <space>/ :Unite grep:.<cr>
 nnoremap <space>s :Unite -quick-match buffer<cr>
 nnoremap <space>y :Unite history/yank<cr>
 
+""""""""""" C++ settings """""""""""""""
+
+map <C-I> :pyf ~/bin/clang-format.py<CR>
+imap <C-I> <ESC>:pyf ~/bin/clang-format.py<CR>
+
+""""""""""" Arduino settings """""""""""""""
+
+au BufRead,BufNewFile *.pde set filetype=arduino
+au BufRead,BufNewFile *.ino set filetype=arduino
+
+autocmd FileType arduino set shiftwidth=2 tabstop=2 cindent
+
 """"""""""" Go settings """""""""""""""
 
 " let $GOPATH="/Users/graymant/Documents/Development/go"
@@ -83,6 +95,14 @@ Plugin 'https://github.com/Lokaltog/vim-easymotion.git'
 Plugin 'https://github.com/Shougo/unite.vim.git'
 Plugin 'https://github.com/bling/vim-airline.git'
 Plugin 'https://github.com/Shougo/vimproc.vim.git'
+Plugin 'https://github.com/jplaut/vim-arduino-ino.git'
+
+Plugin 'godlygeek/tabular'
+Plugin 'plasticboy/vim-markdown'
+
+Plugin 'https://github.com/suan/vim-instant-markdown.git'
+
+Plugin 'https://github.com/jiangmiao/auto-pairs.git'
 
 " git repos on your local machine (i.e. when working on your own plugin)
 "Plugin 'file:///home/gmarik/path/to/plugin'
