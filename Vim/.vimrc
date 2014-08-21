@@ -5,17 +5,74 @@ inoremap jj <Esc>
 :nnoremap <leader><leader> <C-^>
 :nmap <leader>sc :SyntasticCheck<CR>
 :nmap <leader>lc :lclose<CR>
+:nmap <C-1> :w<cr>
+
+:nnoremap <leader>ev :vsplit $MYVIMRC<cr>
+:nnoremap <leader>sv :source $MYVIMRC<cr>
+
+" upper/lower word
+nmap <leader>u mQviwU`Q
+nmap <leader>l mQviwu`Q
+
+" upper/lower first char of word
+nmap <leader>U mQgewvU`Q
+nmap <leader>L mQgewvu`Q
+
+" cd to the directory containing the file in the buffer
+nmap <silent> <leader>cd :lcd %:h<CR>
+
+" Underline the current line with '='
+nmap <silent> <leader>ul :t.<CR>Vr=
+
+" set text wrapping toggles
+nmap <silent> <leader>tw :set invwrap<CR>:set wrap?<CR>
+
+" Bubble single lines
+nmap <C-Up> [e
+nmap <C-Down> ]e
+nmap <C-j> ]e
+nmap <C-k> [e
+
+" Bubble multiple lines
+vmap <C-Up> [egv
+vmap <C-Down> ]egv
+vmap <C-k> [egv
+vmap <C-j> ]egv
+
+" Make shift-insert work like in Xterm
+map <S-Insert> <MiddleMouse>
+map! <S-Insert> <MiddleMouse>
+
+:iabbrev waht what
+:iabbrev tehn then
+:autocmd FileType javascript :iabbrev <buffer> iff if ()<left>
 
 :set guioptions-=m  "remove menu bar
 :set guioptions-=T  "remove toolbar
 :set guioptions-=r  "remove right-hand scroll bar
 :set guioptions-=L  "remove left-hand scroll bar
+:set tabstop=4
 
 colorscheme desert
 
+set backupdir^=~/.vim/_backup//    " where to put backup files.
+set directory^=~/.vim/_temp//      " where to put swap files
+
+set list                      " Show invisible characters
+" List chars
+set listchars=""                  " Reset the listchars
+set listchars=tab:\ \             " a tab should display as "  ", trailing whitespace as "."
+set listchars+=trail:.            " show trailing spaces as dots
+set listchars+=extends:>          " The character to show in the last column when wrap is
+                                  " off and the line continues beyond the right of the screen
+set listchars+=precedes:<         " The character to show in the last column when wrap is
+                                  " off and the line continues beyond the left of the scree
+
+set nowrap
 set incsearch
 set hlsearch
 set ignorecase
+set smartcase
 set number
 
 set autochdir
@@ -41,10 +98,14 @@ nnoremap <space>/ :Unite grep:.<cr>
 nnoremap <space>s :Unite -quick-match buffer<cr>
 nnoremap <space>y :Unite history/yank<cr>
 
+nnoremap <leader>f :<C-u>Unite -start-insert file<CR>
+nnoremap <leader>r :<C-u>Unite -start-insert file_rec<CR>
+
 """"""""""" C++ settings """""""""""""""
 
-map <C-I> :pyf ~/bin/clang-format.py<CR>
-imap <C-I> <ESC>:pyf ~/bin/clang-format.py<CR>
+autocmd FileType cpp nnoremap <C-fc> :pyf ~/bin/clang-format.py<CR>
+autocmd FileType cpp imap <C-fc> <ESC>:pyf ~/bin/clang-format.py<CR>i
+autocmd FileType cpp set shiftwidth=4 tabstop=4
 
 """"""""""" Arduino settings """""""""""""""
 
@@ -96,6 +157,17 @@ Plugin 'https://github.com/Shougo/unite.vim.git'
 Plugin 'https://github.com/bling/vim-airline.git'
 Plugin 'https://github.com/Shougo/vimproc.vim.git'
 Plugin 'https://github.com/jplaut/vim-arduino-ino.git'
+Plugin 'https://github.com/Twinside/vim-cuteErrorMarker.git'
+Plugin 'https://github.com/bronson/vim-trailing-whitespace.git'
+
+" Snippets
+Plugin 'https://github.com/MarcWeber/vim-addon-mw-utils.git'
+Plugin 'https://github.com/tomtom/tlib_vim.git'
+Plugin 'https://github.com/garbas/vim-snipmate.git'
+
+  " Optional:
+Plugin 'https://github.com/honza/vim-snippets.git'
+
 
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
