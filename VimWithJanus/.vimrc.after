@@ -10,34 +10,14 @@ set hlsearch
 set ignorecase
 set number
 
+set autochdir
+
 color desert
 
 let g:syntastic_enable_perl_checker = 1
 
 set nocompatible
 filetype off
-
-"""""""""""""" Vundle """""""""""""""""""""
-
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
-
-Plugin 'gmarik/vundle'
-
-"Plugin 'L9'
-"Plugin 'FuzzyFinder'
-"Plugin 'Valloric/YouCompleteMe'
-"Plugin 'marijnh/tern_for_vim'
-"Plugin 'othree/html5.vim'
-"Plugin 'tpope/vim-ragtag'
-"Plugin 'tpope/vim-surround'
-"Plugin 'tpope/vim-repeat'
-"Plugin 'tpope/vim-dispatch'
-"Plugin 'derekwyatt/vim-scala'
-"Plugin 'scrooloose/syntastic'
-"Plugin 'spf13/PIV'
-"Plugin 'bling/vim-airline'
-"Plugin 'airblade/vim-gitgutter'
 
 filetype plugin indent on
 filetype plugin on
@@ -56,11 +36,20 @@ source ~/.janus/vim-go/autoload/go/complete.vim
 source ~/.janus/vim-go/autoload/go/package.vim
 source ~/.janus/vim-go/autoload/go/tool.vim
 
+""""""""""" Unite """""""""""""""
+
+nnoremap <leader>un :Unite file_rec/async<cr>
+nnoremap <space>/ :Unite grep:.<cr>
+nnoremap <space>s :Unite -quick-match buffer<cr>
+
 """""""""""" You Complete Me options """""""""""""
 
 let g:ycm_autoclose_preview_window_after_completion = 1
 let g:ycm_autoclose_preview_window_after_insertion = 1
 let g:ycm_add_preview_to_completeopt = 1
+
+let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
+let g:ycm_confirm_extra_conf = 0
 
 """"""""""" Syntastic options """""""""""""""""""
 
@@ -81,6 +70,26 @@ let g:EclimCompletionMethod = 'omnifunc'
 
 "set tags=tags;/
 
+""""""""""" C and CPP settings """""""""""""""
+
+func! FormatCPP()
+  let l:winview = winsaveview()
+  :exe '%!astyle --mode=c --style=ansi -s2 -p --unpad-paren'
+  :$d
+  call winrestview(l:winview)
+endfunc
+
+:nmap <leader>fcpp :call FormatCPP()<CR>
+
+""""""""""" Javascript settings """""""""""""""
+
+func! FormatJS()
+  let l:winview = winsaveview()
+  :exe '%!js-beautify -i'
+  call winrestview(l:winview)
+endfunc
+
+:nmap <leader>fjs :call FormatJS()<CR>
 
 """"""""""" Html and Css settings """""""""""""""
 
@@ -95,6 +104,13 @@ autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
 vmap ,x :!tidy -q -i --show-errors 0<CR>
 :command! Thtml :%!~/bin/tidy -config ~/exampletidyconfig -q -i --show-errors 0
 :nmap <leader>fh :Thtml<CR>
+
+""""""""""" Arduino settings """""""""""""""
+
+au BufRead,BufNewFile *.pde set filetype=arduino
+au BufRead,BufNewFile *.ino set filetype=arduino
+autocmd FileType arduino setl cindent
+autocmd FileType arduino set omnifunc=ccomplete#Complete
 
 """"""""""" PHP settings """""""""""""""
 
@@ -130,6 +146,10 @@ autocmd FileType html set omnifunc=go#complete#Complete
 """"""""""" Silverstripe settings """""""""""""""
 
 au BufNewFile,BufRead *.ss set filetype=html
+
+""""""""""" Markdown settings """""""""""""""
+
+autocmd BufNewFile,BufReadPost *.md set filetype=markdown
 
 """"""""""" MacVim GUI mode """""""""""""""
 
