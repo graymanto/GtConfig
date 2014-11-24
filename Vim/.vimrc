@@ -3,12 +3,12 @@ inoremap jj <Esc>
 :imap <C-j> <Right><Plug>snipMateNextOrTrigger
 :nmap <C-tab> :bnext<cr>
 :nmap <C-S-tab> :bprevious<cr>
-:nnoremap <leader><leader> <C-^>
 :nmap <leader>sc :SyntasticCheck<CR>
 :nmap <leader>lc :lclose<CR>
 :nmap <leader>noh :noh<CR>
 :nmap <C-1> :w<cr>
 :nnoremap <leader>qq :q<CR>
+:nnoremap <leader>qa :qa<CR>
 :nnoremap <leader>ww :w<CR>
 :nnoremap <leader>ee :Bclose<CR>
 :nnoremap <leader>nt :NERDTreeToggle<CR>
@@ -35,10 +35,10 @@ if has("gui_macvim")
 		" when resizing MacVim window
 		autocmd VimResized * wincmd =
 else
-		:nnoremap <silent> = :exe "resize " . (winheight(0) * 3/2)<CR>
-		:nnoremap <silent> - :exe "resize " . (winheight(0) * 2/3)<CR>
-		:nnoremap <silent> < :exe "vertical resize +5"<CR>
-		:nnoremap <silent> > :exe "vertical resize -5"<CR>
+		nnoremap <M-Right> :vertical resize +5<CR>
+		nnoremap <M-Left>  :vertical resize -5<CR>
+		nnoremap <M-Up>    :resize -5<CR>
+		nnoremap <M-Down>  :resize +5<CR>
 endif
 
 """"""""""""""""""""""""""""""""""""""""
@@ -50,8 +50,8 @@ silent! :unmap <leader>b
 :vnoremap . :norm.<CR>
 
 " upper/lower word
-nmap <leader>u mQviwU`Q
-nmap <leader>l mQviwu`Q
+nmap <leader>uc mQviwU`Q
+nmap <leader>lc mQviwu`Q
 
 " upper/lower first char of word
 nmap <leader>U mQgewvU`Q
@@ -64,7 +64,7 @@ nmap <silent> <leader>cd :lcd %:h<CR>
 nmap <silent> <leader>ul :t.<CR>Vr=
 
 " set text wrapping toggles
-nmap <silent> <leader>tw :set invwrap<CR>:set wrap?<CR>
+nmap <silent> <leader>tw :set invwrap<cr>:set wrap?<cr>
 
 " Bubble multiple lines
 vmap <C-k> [egv
@@ -135,6 +135,21 @@ set autowriteall
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
+"""""""""""" Tag settings """""""""""""
+set csprg=gtags-cscope
+" cscope add /foo/bar/GTAGS
+
+"""""""""""" Vimdiff settings """""""""""""
+
+noremap <leader>dgl :diffget LO<CR>
+noremap <leader>dgb :diffget BA<CR>
+noremap <leader>dgr :diffget RE<CR>
+
+"""""""""""" Grep settings """""""""""""
+
+set grepprg=ack\ --nogroup\ --column\ $*
+set grepformat=%f:%l:%c:%m
+
 """""""""""" You Complete Me options """""""""""""
 
 let g:ycm_autoclose_preview_window_after_completion = 1
@@ -152,12 +167,21 @@ let g:ycm_confirm_extra_conf = 0
 """"""""""" Unite """""""""""""""
 let g:unite_source_history_yank_enable = 1
 
-nnoremap <leader>un :Unite -start-insert file_rec/async<cr>
+nnoremap <space>u :Unite -start-insert file_rec/async<cr>
 nnoremap <leader>uunc :Unite -quick-match change<cr>
-nnoremap <space>/ :Unite grep:.<cr>
-nnoremap <space>s :Unite -quick-match buffer<cr>
+nnoremap <space>c :Unite -quick-match change<cr>
+nnoremap <leader>u/ :Unite grep:.<cr>
+nnoremap <leader>bb :Unite -quick-match buffer<cr>
 nnoremap <space>y :Unite -quick-match history/yank<cr>
 nnoremap <space>f :Unite -start-insert buffer<cr>
+
+nnoremap <leader>gg :execute 'Unite gtags/def'<CR>
+nnoremap <leader>gc :execute 'Unite gtags/context'<CR>
+nnoremap <leader>gr :execute 'Unite gtags/ref'<CR>
+nnoremap <leader>ge :execute 'Unite gtags/grep'<CR>
+vnoremap <leader>gg <ESC>:execute 'Unite gtags/def:'.GetVisualSelection()<CR>
+
+nnoremap <leader>uo :Unite outline<CR>
 
 " Can filter if required ie :Unite -input=foo file
 
@@ -169,9 +193,46 @@ if executable('ag')
   let g:unite_source_grep_recursive_opt = ''
 endif
 
+""""""""""" Easy motion """""""""""""""
+
+let g:EasyMotion_do_mapping = 0 " Disable default mappings
+
+" Bi-directional find motion
+" Jump to anywhere you want with minimal keystrokes, with just one key binding.
+" `s{char}{label}`
+" nmap s <Plug>(easymotion-s)
+" or
+" `s{char}{char}{label}`
+" Need one more keystroke, but on average, it may be more comfortable.
+nmap <space>s <Plug>(easymotion-s2)
+
+" Turn on case sensitive feature
+let g:EasyMotion_smartcase = 1
+
+map  <space>/ <Plug>(easymotion-sn)
+omap <space>/ <Plug>(easymotion-tn)
+nmap <space>w <Plug>(easymotion-w)
+nmap <space>b <Plug>(easymotion-b)
+
+" JK motions: Line motions
+map <space>j <Plug>(easymotion-j)
+map <space>k <Plug>(easymotion-k)
+map <space>l <Plug>(easymotion-lineforward)
+map <space>h <Plug>(easymotion-linebackward)
+
 """"""""""" Region Expanding """""""""""""""
+
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
+
+""""""""""" Haskell settings """""""""""""""
+
+let g:ycm_semantic_triggers = {'haskell' : ['.']}
+
+augroup hskag
+	autocmd!
+	:autocmd FileType haskell set omnifunc=necoghc#omnifunc
+augroup END
 
 """"""""""" Javascript settings """""""""""""""
 
@@ -184,10 +245,13 @@ augroup END
 
 augroup cppac
 	autocmd!
-	autocmd FileType cpp nnoremap <C-cf> :pyf ~/bin/clang-format.py<CR>
+	autocmd FileType cpp nnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
+	autocmd FileType cpp vnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
 	autocmd FileType cpp imap <C-cf> <ESC>:pyf ~/bin/clang-format.py<CR>i
-	autocmd FileType cpp set shiftwidth=4 tabstop=4
-	autocmd FileType cpp setlocal makeprg=cd\ Build\ &&\ make\ -j4
+	autocmd FileType cpp inoremap jk ->
+	autocmd FileType cpp inoremap ::: <C-R>=expand("%:t:r") . "::"<CR>
+	autocmd FileType cpp set shiftwidth=4 tabstop=4 expandtab
+	" autocmd FileType cpp setlocal makeprg=cd\ Build\ &&\ make\ -j4
 	" autocmd BufWrite *.cpp call FormatCPP()
 	" autocmd BufWrite *.cpp Make
 augroup END
@@ -202,9 +266,15 @@ endfunc
 :noremap <leader>mm :make<CR>
 :noremap <leader>co :Copen<CR>
 
+""""""""""" XML settings """""""""""""""
+
+augroup xmlag
+	autocmd FileType xml set shiftwidth=4 tabstop=4 expandtab
+augroup END
+
 """"""""""" Arduino settings """""""""""""""
 
-au BufRead,BufNewFile *.pde set filetype=arduino
+au BufRead,BufNewFile *.pde set filetype=cpp
 au BufRead,BufNewFile *.ino set filetype=arduino
 
 augroup arduinoac
@@ -243,6 +313,13 @@ augroup cmakeac
 	:autocmd BufRead,BufNewFile *.cmake,CMakeLists.txt,*.cmake.in runtime! indent/cmake.vim
 	:autocmd BufRead,BufNewFile *.cmake,CMakeLists.txt,*.cmake.in setf cmake
 	:autocmd BufRead,BufNewFile *.ctest,*.ctest.in setf cmake
+augroup END
+
+""""""""""" Python settings """"""""""""""""""""""
+
+augroup pythonac
+	autocmd!
+	" autocmd FileType cpp set shiftwidth=4 tabstop=4 expandtab
 augroup END
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -293,8 +370,21 @@ Plugin 'othree/html5.vim'
 Plugin 'https://github.com/tpope/vim-git.git'
 Plugin 'https://github.com/spf13/PIV.git'
 Plugin 'https://github.com/oplatek/Conque-Shell'
+Plugin 'https://github.com/vim-scripts/Cppcheck-compiler.git'
 
 Plugin 'https://github.com/terryma/vim-expand-region.git'
+
+" Tags
+Plugin 'https://github.com/vim-scripts/gtags.vim.git'
+Plugin 'https://github.com/hewes/unite-gtags.git'
+Plugin 'https://github.com/Shougo/unite-outline.git'
+
+
+" Haskell
+Plugin 'https://github.com/dag/vim2hs.git'
+Plugin 'https://github.com/eagletmt/neco-ghc.git'
+Plugin 'https://github.com/eagletmt/ghcmod-vim.git'
+Plugin 'https://github.com/pbrisbin/vim-syntax-shakespeare.git'
 
 " Snippets
 Plugin 'https://github.com/MarcWeber/vim-addon-mw-utils.git'
@@ -315,6 +405,7 @@ Plugin 'https://github.com/suan/vim-instant-markdown.git'
 Plugin 'https://github.com/jiangmiao/auto-pairs.git'
 
 Plugin 'https://github.com/mtth/scratch.vim.git'
+Plugin 'https://github.com/rhysd/vim-clang-format.git'
 
 " git repos on your local machine (i.e. when working on your own plugin)
 "Plugin 'file:///home/gmarik/path/to/plugin'
@@ -325,3 +416,5 @@ Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 filetype plugin indent on    " required
+
+:nnoremap <leader><leader> <C-^>
