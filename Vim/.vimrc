@@ -13,6 +13,10 @@ nnoremap <leader>ww :w<CR>
 nnoremap <leader>ee :Bclose<CR>
 nnoremap <leader>ra :bufdo e!<CR>
 
+noremap <leader>mm :make<CR>
+noremap <leader>co :Copen<CR>
+noremap <leader>sm :messages<CR>
+
 nnoremap <leader>zw :ZoomWin<CR>
 nnoremap <leader>nt :NERDTreeToggle<CR>
 
@@ -22,45 +26,53 @@ nnoremap <leader>sv :source $MYVIMRC<cr>
 nnoremap <leader>cpps :vsplit ~/.vim/bundle/vim-snippets/snippets/cpp.snippets<cr>
 nnoremap <leader>cards :vsplit ~/.vim/bundle/vim-snippets/snippets/arduino.snippets<cr>
 
+""""""""""" Complimentary settings bindings """""""""""""""
+
+nnoremap [et :set expandtab<cr>
+nnoremap ]et :set noexpandtab<cr>
+nnoremap [pt :set paste<cr>
+nnoremap ]pt :set nopaste<cr>
+
 """"""""""" Terminal fixes """""""""""""""
 "fix meta-keys which generate <Esc>a .. <Esc>z
 
 if !has('gui_running')
-    let c='a'
-    while c <= 'z'
-        exec "set <M-".toupper(c).">=\e".c
-        exec "imap \e".c." <M-".toupper(c).">"
-        let c = nr2char(1+char2nr(c))
-    endw
+	let c='a'
+	while c <= 'z'
+		exec "set <M-".toupper(c).">=\e".c
+		exec "imap \e".c." <M-".toupper(c).">"
+		let c = nr2char(1+char2nr(c))
+	endw
 endif
 
 
 """"""""""" Resize  mode """""""""""""""
 
+nnoremap <M-Right> :vertical resize +5<CR>
+nnoremap <M-Left>  :vertical resize -5<CR>
+nnoremap <M-Up>    :resize -5<CR>
+nnoremap <M-Down>  :resize +5<CR>
+
 if has("gui_macvim")
-    set fuoptions=maxvert,maxhorz
-    set noballooneval
+	set fuoptions=maxvert,maxhorz
+	set noballooneval
 
-    " resize current buffer by +/- 5
-    nnoremap <M-Right> :vertical resize +5<CR>
-    nnoremap <M-Left>  :vertical resize -5<CR>
-    nnoremap <M-Up>    :resize -5<CR>
-    nnoremap <M-Down>  :resize +5<CR>
-
-    " Automatically resize splits
-    " when resizing MacVim window
-    autocmd VimResized * wincmd =
+	" Automatically resize splits
+	" when resizing MacVim window
+	autocmd VimResized * wincmd =
 else
-    nnoremap <M-Right> :vertical resize +5<CR>
-    nnoremap <M-Left>  :vertical resize -5<CR>
-    nnoremap <M-Up>    :resize -5<CR>
-    nnoremap <M-Down>  :resize +5<CR>
+	" For terminal
+	nnoremap [1;3C     :vertical resize +5<CR>
+	nnoremap [1;3D     :vertical resize -5<CR>
+	nnoremap [1;3A     :resize -5<CR>
+	nnoremap [1;3B     :resize +5<CR>
+endif
 
-    " For terminal
-    nnoremap [1;3C     :vertical resize +5<CR>
-    nnoremap [1;3D     :vertical resize -5<CR>
-    nnoremap [1;3A     :resize -5<CR>
-    nnoremap [1;3B     :resize +5<CR>
+if has("macunix")
+	nnoremap <space><Right> :vertical resize +5<CR>
+	nnoremap <space><Left>  :vertical resize -5<CR>
+	nnoremap <space><Up>    :resize -5<CR>
+	nnoremap <space><Down>  :resize +5<CR>
 endif
 
 """"""""""""""""""""""""""""""""""""""""
@@ -95,6 +107,8 @@ vmap <C-j> ]egv
 " Make shift-insert work like in Xterm
 map <S-Insert> <MiddleMouse>
 map! <S-Insert> <MiddleMouse>
+
+set shiftwidth=4
 
 """"""""""" Commands """"""""""""""
 
@@ -140,28 +154,28 @@ set directory^=~/.vim/_temp//      " where to put swap files
 
 set list                      " Show invisible characters
 func! ListCharsCommon()
-    set listchars+=trail:.            " show trailing spaces as dots
-    set listchars+=extends:>          " The character to show in the last column when wrap is
-    " off and the line continues beyond the right of the screen
-    set listchars+=precedes:<         " The character to show in the last column when wrap is
-    " off and the line continues beyond the left of the scree
-    "
+	set listchars+=trail:.            " show trailing spaces as dots
+	set listchars+=extends:>          " The character to show in the last column when wrap is
+	" off and the line continues beyond the right of the screen
+	set listchars+=precedes:<         " The character to show in the last column when wrap is
+	" off and the line continues beyond the left of the scree
+	"
 endfunc
 
 func! ListCharsShowTabs()
-    " List chars
-    set listchars=""                  " Reset the listchars
-    " set listchars=tab:\ \             " a tab should display as "  ", trailing whitespace as "."
-    set listchars=tab:-.             " a tab should display as "  ", trailing whitespace as "."
+	" List chars
+	set listchars=""                  " Reset the listchars
+	" set listchars=tab:\ \             " a tab should display as "  ", trailing whitespace as "."
+	set listchars=tab:-.             " a tab should display as "  ", trailing whitespace as "."
 
-    call ListCharsCommon()
+	call ListCharsCommon()
 endfunc
 func! ListCharsHideTabs()
-    " List chars
-    set listchars=""                  " Reset the listchars
-    set listchars=tab:\ \             " a tab should display as "  ", trailing whitespace as "."
+	" List chars
+	set listchars=""                  " Reset the listchars
+	set listchars=tab:\ \             " a tab should display as "  ", trailing whitespace as "."
 
-    call ListCharsCommon()
+	call ListCharsCommon()
 endfunc
 command! ShowTabs :call ListCharsShowTabs()
 command! HideTabs :call ListCharsHideTabs()
@@ -194,8 +208,8 @@ noremap <leader>dgb :diffget BA<CR>
 noremap <leader>dgr :diffget RE<CR>
 
 if &diff
-    " diff mode only ignore whitespace in comparisons
-    set diffopt+=iwhite
+	" diff mode only ignore whitespace in comparisons
+	set diffopt+=iwhite
 endif
 
 """""""""""" Grep settings """""""""""""
@@ -216,6 +230,56 @@ let g:ycm_confirm_extra_conf = 0
 nnoremap <leader>gto :YcmCompleter GoTo<CR>
 nnoremap <leader>gti :YcmCompleter GoToImprecise<CR>
 nnoremap <F12> :YcmCompleter GoToImprecise<CR>
+
+""""""""""" Omnisharp """""""""""""""
+
+let g:OmniSharp_selector_ui = 'unite'
+let g:OmniSharp_server_type = 'roslyn'
+
+augroup omnisharp_commands
+	autocmd!
+
+	au BufRead,BufNewFile *.csx set filetype=cs
+
+	"Set autocomplete function to OmniSharp (if not using YouCompleteMe completion plugin)
+	autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
+
+	" Synchronous build (blocks Vim)
+	"autocmd FileType cs nnoremap <F5> :wa!<cr>:OmniSharpBuild<cr>
+	" Builds can also run asynchronously with vim-dispatch installed
+	autocmd FileType cs nnoremap <leader>b :wa!<cr>:OmniSharpBuildAsync<cr>
+	" automatic syntax check on events (TextChanged requires Vim 7.4)
+	autocmd BufEnter,TextChanged,InsertLeave *.cs SyntasticCheck
+
+	" Automatically add new cs files to the nearest project on save
+	autocmd BufWritePost *.cs call OmniSharp#AddToProject()
+
+	"show type information automatically when the cursor stops moving
+	autocmd CursorHold *.cs call OmniSharp#TypeLookupWithoutDocumentation()
+
+	"The following commands are contextual, based on the current cursor position.
+
+	autocmd FileType cs nnoremap gd :OmniSharpGotoDefinition<cr>
+	autocmd FileType cs nnoremap <leader>fi :OmniSharpFindImplementations<cr>
+	autocmd FileType cs nnoremap <leader>ft :OmniSharpFindType<cr>
+	autocmd FileType cs nnoremap <leader>fs :OmniSharpFindSymbol<cr>
+	autocmd FileType cs nnoremap <leader>fu :OmniSharpFindUsages<cr>
+	"finds members in the current buffer
+	autocmd FileType cs nnoremap <leader>fm :OmniSharpFindMembers<cr>
+	" cursor can be anywhere on the line containing an issue
+	" autocmd FileType cs nnoremap <leader>x  :OmniSharpFixIssue<cr>
+	" autocmd FileType cs nnoremap <leader>fx :OmniSharpFixUsings<cr>
+	" autocmd FileType cs nnoremap <leader>tt :OmniSharpTypeLookup<cr>
+	" autocmd FileType cs nnoremap <leader>dc :OmniSharpDocumentation<cr>
+	"navigate up by method/property/field
+	" autocmd FileType cs nnoremap <C-K> :OmniSharpNavigateUp<cr>
+	"navigate down by method/property/field
+	" autocmd FileType cs nnoremap <C-J> :OmniSharpNavigateDown<cr>
+
+	autocmd FileType cs set shiftwidth=4 tabstop=4 expandtab
+
+augroup END
+
 
 """"""""""" Tabularize """""""""""""""
 
@@ -249,9 +313,9 @@ nnoremap <leader>uo :Unite outline<CR>
 nnoremap <leader>of :<C-u>Unite -start-insert file/async<CR>
 
 if executable('ag')
-    let g:unite_source_grep_command = 'ag'
-    let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
-    let g:unite_source_grep_recursive_opt = ''
+	let g:unite_source_grep_command = 'ag'
+	let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
+	let g:unite_source_grep_recursive_opt = ''
 endif
 
 """"""""""" Easy motion """""""""""""""
@@ -286,6 +350,20 @@ map <space>h <Plug>(easymotion-linebackward)
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
 
+""""""""""" Zsh settings """"""""""""""""""""""
+
+augroup zshag
+	autocmd!
+	autocmd FileType zsh set shiftwidth=4 tabstop=4
+augroup END
+
+""""""""""" Vimfile settings """"""""""""""""""""""
+
+augroup vimag
+	autocmd!
+	autocmd FileType vim set shiftwidth=4 tabstop=4
+augroup END
+
 """"""""""" Haskell settings """""""""""""""
 
 let g:ycm_semantic_triggers = {'haskell' : ['.']}
@@ -304,57 +382,75 @@ let g:haskell_indent_do = 0
 let g:haskell_indent_in = 0
 
 augroup hskag
-    autocmd!
-    :autocmd FileType haskell set omnifunc=necoghc#omnifunc
+	autocmd!
+	:autocmd FileType haskell set omnifunc=necoghc#omnifunc
 augroup END
 
 """"""""""" Javascript settings """""""""""""""
 
 augroup javascriptag
-    autocmd!
-    :autocmd FileType javascript :iabbrev <buffer> iff if ()<left>
+	autocmd!
+	:autocmd FileType javascript :iabbrev <buffer> iff if ()<left>
+augroup END
+
+""""""""""" Json formatting """""""""""""""
+
+func! FormatJson()
+	let l:winview = winsaveview()
+	:exe '%!jq ''.'''
+	call winrestview(l:winview)
+endfunc
+nnoremap <leader>fjs :call FormatJson()<CR>
+
+""""""""""" Pony settings """""""""""""""
+
+augroup ponglang
+	autocmd!
+	autocmd FileType pony set shiftwidth=2 tabstop=2 expandtab
 augroup END
 
 """"""""""" C settings """""""""""""""
 
 augroup cac
-    autocmd!
-    autocmd FileType c nnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
-    autocmd FileType c vnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
-    autocmd FileType c imap <C-cf> <ESC>:pyf ~/bin/clang-format.py<CR>i
-    autocmd FileType c inoremap jk ->
-    autocmd FileType c set shiftwidth=4 tabstop=4 expandtab
+	autocmd!
+	func! Format()
+		call FormatCpp()
+	endfunc
+	autocmd FileType c nnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
+	autocmd FileType c vnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
+	autocmd FileType c imap <C-cf> <ESC>:pyf ~/bin/clang-format.py<CR>i
+	autocmd FileType c inoremap jk ->
+	autocmd FileType c set shiftwidth=4 tabstop=4 expandtab
 augroup END
 
 """"""""""" C++ settings """""""""""""""
 
 augroup cppac
-    autocmd!
-    autocmd FileType cpp nnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
-    autocmd FileType cpp vnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
-    autocmd FileType cpp imap <C-cf> <ESC>:pyf ~/bin/clang-format.py<CR>i
-    autocmd FileType cpp inoremap jk ->
-    autocmd FileType cpp inoremap ::: <C-R>=expand("%:t:r") . "::"<CR>
-    autocmd FileType cpp set shiftwidth=4 tabstop=4 expandtab
-    " autocmd FileType cpp setlocal makeprg=cd\ Build\ &&\ make\ -j4
-    " autocmd BufWrite *.cpp call FormatCPP()
-    " autocmd BufWrite *.cpp Make
+	autocmd!
+	func! FormatCPP()
+		let l:winview = winsaveview()
+		:exe '%!clang-format -style=file'
+		call winrestview(l:winview)
+	endfunc
+	func! Format()
+		call FormatCpp()
+	endfunc
+	autocmd FileType cpp nnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
+	autocmd FileType cpp vnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
+	autocmd FileType cpp imap <C-cf> <ESC>:pyf ~/bin/clang-format.py<CR>i
+	autocmd FileType cpp inoremap jk ->
+	autocmd FileType cpp inoremap ::: <C-R>=expand("%:t:r") . "::"<CR>
+	autocmd FileType cpp set shiftwidth=4 tabstop=4 expandtab
+	autocmd FileType cpp nnoremap <leader>fcpp :call FormatCPP()<CR>
+	" autocmd FileType cpp setlocal makeprg=cd\ Build\ &&\ make\ -j4
+	" autocmd BufWrite *.cpp call FormatCPP()
+	" autocmd BufWrite *.cpp Make
 augroup END
-
-func! FormatCPP()
-    let l:winview = winsaveview()
-    :exe '%!clang-format -style=file'
-    call winrestview(l:winview)
-endfunc
-
-nnoremap <leader>fcpp :call FormatCPP()<CR>
-noremap <leader>mm :make<CR>
-noremap <leader>co :Copen<CR>
 
 """"""""""" XML settings """""""""""""""
 
 augroup xmlag
-    autocmd FileType xml set shiftwidth=4 tabstop=4 expandtab
+	autocmd FileType xml set shiftwidth=4 tabstop=4 expandtab
 augroup END
 
 """"""""""" Arduino settings """""""""""""""
@@ -363,23 +459,23 @@ au BufRead,BufNewFile *.pde set filetype=cpp
 au BufRead,BufNewFile *.ino set filetype=cpp
 
 augroup arduinoac
-    autocmd!
-    autocmd FileType arduino setlocal shiftwidth=4 tabstop=4 cindent
-    autocmd FileType arduino setlocal makeprg=cd\ ..\ &&\ ino\ build
-    autocmd FileType arduino nnoremap <leader>iu :exe '!cd .. && ino upload'<CR>
+	autocmd!
+	autocmd FileType arduino setlocal shiftwidth=4 tabstop=4 cindent
+	autocmd FileType arduino setlocal makeprg=cd\ ..\ &&\ ino\ build
+	autocmd FileType arduino nnoremap <leader>iu :exe '!cd .. && ino upload'<CR>
 augroup END
 
 """"""""""" Markdown settings """""""""""""""
 
 augroup markdownac
-    autocmd!
-    autocmd FileType mkd setlocal spell
+	autocmd!
+	autocmd FileType mkd setlocal spell
 augroup END
 
 func! FormatMD()
-    let l:winview = winsaveview()
-    :exe '%!par w120'
-    call winrestview(l:winview)
+	let l:winview = winsaveview()
+	:exe '%!par w120'
+	call winrestview(l:winview)
 endfunc
 
 nnoremap <leader>fmd :call FormatMD()<CR>
@@ -387,24 +483,63 @@ vnoremap <leader>pft !par w120<CR>
 
 """"""""""" Go settings """""""""""""""
 
-" let $GOPATH="/Users/graymant/Documents/Development/go"
-" let $PATH.= ':/Users/graymant/Documents/Development/go/bin:/usr/local/go/bin'
+augroup golangac
+	autocmd!
+	func! FormatGoLang()
+		let l:winview = winsaveview()
+		:exe '%!gofmt'
+		call winrestview(l:winview)
+	endfunc
+	func! Format()
+		call FormatGoLang()
+	endfunc
+	autocmd FileType go nnoremap <leader>fgo :call FormatGoLang()<CR>
+	autocmd FileType go set shiftwidth=4 tabstop=4
+	" autocmd BufWrite *.go call FormatGoLang()
+augroup END
+
+""""""""""" Lua settings """""""""""""""
+
+augroup luagac
+	autocmd!
+	func! Format()
+		let l:winview = winsaveview()
+		" :silent! %s/\(,\)\([a-zA-Z0-9#{(]\)/\1 \2/g
+		" :silent! %s/\([=\/%\+]\)\([a-zA-Z0-9]\)/\1 \2/g
+		" :silent! %s/\([a-zA-Z0-9]\)\([=\/%\+]\)/\1 \2/g
+		normal gg=G
+		" To do...
+		" :exe '%!gofmt'
+		call winrestview(l:winview)
+	endfunc
+	" func! FormatLines()
+	" let l:winview = winsaveview()
+	" call feedkeys("=")
+	" To do...
+	" :exe '%!gofmt'
+	" call winrestview(l:winview)
+	" endfunc
+	let g:lua_complete_omni = 1
+	let g:lua_complete_dynamic = 0
+	autocmd FileType lua nnoremap <leader>fmt :call FormatLua()<CR>
+	autocmd FileType lua set shiftwidth=4 tabstop=4 expandtab
+augroup END
 
 """"""""""" CMake settings """"""""""""""""""""""
 
 augroup cmakeac
-    autocmd!
-    autocmd BufRead,BufNewFile *.cmake,CMakeLists.txt,*.cmake.in runtime! indent/cmake.vim
-    autocmd BufRead,BufNewFile *.cmake,CMakeLists.txt,*.cmake.in setf cmake
-    autocmd BufRead,BufNewFile *.ctest,*.ctest.in setf cmake
+	autocmd!
+	autocmd BufRead,BufNewFile *.cmake,CMakeLists.txt,*.cmake.in runtime! indent/cmake.vim
+	autocmd BufRead,BufNewFile *.cmake,CMakeLists.txt,*.cmake.in setf cmake
+	autocmd BufRead,BufNewFile *.ctest,*.ctest.in setf cmake
 augroup END
 
 """"""""""" Python settings """"""""""""""""""""""
 
 augroup pythonac
-    autocmd!
-    autocmd FileType python set shiftwidth=4 tabstop=4 expandtab
-    " autocmd FileType python vnoremap <leader>ffp :!autopep8 -<CR>
+	autocmd!
+	autocmd FileType python set shiftwidth=4 tabstop=4 expandtab
+	" autocmd FileType python vnoremap <leader>ffp :!autopep8 -<CR>
 augroup END
 
 command! ClearPypath :let $PYTHONPATH=''
@@ -588,7 +723,6 @@ Plugin 'https://github.com/garbas/vim-snipmate.git'
 " Optional:
 Plugin 'https://github.com/honza/vim-snippets.git'
 
-
 Plugin 'godlygeek/tabular'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'https://github.com/OrangeT/vim-csharp.git'
@@ -601,6 +735,17 @@ Plugin 'https://github.com/jiangmiao/auto-pairs.git'
 Plugin 'https://github.com/mtth/scratch.vim.git'
 Plugin 'https://github.com/rhysd/vim-clang-format.git'
 Plugin 'https://github.com/flazz/vim-colorschemes.git'
+
+Plugin 'https://github.com/amoffat/snake.git'
+
+Plugin 'https://github.com/dleonard0/pony-vim-syntax.git'
+
+Plugin 'https://github.com/OmniSharp/omnisharp-vim.git'
+
+Plugin 'https://github.com/xolox/vim-misc.git'
+Plugin 'https://github.com/xolox/vim-lua-ftplugin.git'
+Plugin 'https://github.com/graymanto/vim-lua-indent.git'
+" Plugin 'https://github.com/xolox/vim-lua-inspect.git'
 
 " git repos on your local machine (i.e. when working on your own plugin)
 "Plugin 'file:///home/gmarik/path/to/plugin'
@@ -617,5 +762,11 @@ filetype plugin indent on    " required
 :nnoremap <leader><leader> <C-^>
 
 if !has('gui_running')
-    highlight Pmenu ctermbg=200 ctermfg=white gui=bold
+	highlight Pmenu ctermbg=200 ctermfg=white gui=bold
 endif
+
+nnoremap <leader>fff :call Format()<CR>
+" vnoremap <leader>fff :call FormatLines()<CR>
+vnoremap <leader>fff =
+
+ShowTabs
