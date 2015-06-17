@@ -20,6 +20,14 @@ fancy-ctrl-z () {
 	fi
 }
 
+hex2dec(){
+	echo "ibase=16; $@"|bc
+}
+
+dec2hex(){
+	echo "obase=16; $@"|bc
+}
+
 zle -N fancy-ctrl-z
 bindkey '^Z' fancy-ctrl-z
 
