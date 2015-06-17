@@ -1,53 +1,75 @@
-:let mapleader = ","
+let mapleader = ","
 inoremap jj <Esc>
-:imap <C-j> <Right><Plug>snipMateNextOrTrigger
-:nmap <C-tab> :bnext<cr>
-:nmap <C-S-tab> :bprevious<cr>
-:nmap <leader>sc :SyntasticCheck<CR>
-:nmap <leader>lc :lclose<CR>
-:nmap <leader>noh :noh<CR>
-:nmap <C-1> :w<cr>
-:nnoremap <leader>qq :q<CR>
-:nnoremap <leader>qa :qa<CR>
-:nnoremap <leader>ww :w<CR>
-:nnoremap <leader>ee :Bclose<CR>
-:nnoremap <leader>nt :NERDTreeToggle<CR>
+imap <C-j> <Right><Plug>snipMateNextOrTrigger
+nmap <C-tab> :bnext<cr>
+nmap <C-S-tab> :bprevious<cr>
+nmap <leader>sc :SyntasticCheck<CR>
+nmap <leader>lc :lclose<CR>
+nmap <leader>noh :noh<CR>
+nmap <C-1> :w<cr>
+nnoremap <leader>qq :q<CR>
+nnoremap <leader>qa :qa<CR>
+nnoremap <leader>ww :w<CR>
+nnoremap <leader>ee :Bclose<CR>
+nnoremap <leader>ra :bufdo e!<CR>
 
-:nnoremap <leader>ev :vsplit $MYVIMRC<cr>
-:nnoremap <leader>sv :source $MYVIMRC<cr>
+nnoremap <leader>zw :ZoomWin<CR>
+nnoremap <leader>nt :NERDTreeToggle<CR>
 
-:nnoremap <leader>cpps :vsplit ~/.vim/bundle/vim-snippets/snippets/cpp.snippets<cr>
-:nnoremap <leader>cards :vsplit ~/.vim/bundle/vim-snippets/snippets/arduino.snippets<cr>
+nnoremap <leader>ev :vsplit $MYVIMRC<cr>
+nnoremap <leader>sv :source $MYVIMRC<cr>
+
+nnoremap <leader>cpps :vsplit ~/.vim/bundle/vim-snippets/snippets/cpp.snippets<cr>
+nnoremap <leader>cards :vsplit ~/.vim/bundle/vim-snippets/snippets/arduino.snippets<cr>
+
+""""""""""" Terminal fixes """""""""""""""
+"fix meta-keys which generate <Esc>a .. <Esc>z
+
+if !has('gui_running')
+    let c='a'
+    while c <= 'z'
+        exec "set <M-".toupper(c).">=\e".c
+        exec "imap \e".c." <M-".toupper(c).">"
+        let c = nr2char(1+char2nr(c))
+    endw
+endif
+
 
 """"""""""" Resize  mode """""""""""""""
 
 if has("gui_macvim")
-		set fuoptions=maxvert,maxhorz
-		set noballooneval
+    set fuoptions=maxvert,maxhorz
+    set noballooneval
 
-		" resize current buffer by +/- 5
-		nnoremap <M-Right> :vertical resize +5<CR>
-		nnoremap <M-Left>  :vertical resize -5<CR>
-		nnoremap <M-Up>    :resize -5<CR>
-		nnoremap <M-Down>  :resize +5<CR>
+    " resize current buffer by +/- 5
+    nnoremap <M-Right> :vertical resize +5<CR>
+    nnoremap <M-Left>  :vertical resize -5<CR>
+    nnoremap <M-Up>    :resize -5<CR>
+    nnoremap <M-Down>  :resize +5<CR>
 
-		" Automatically resize splits
-		" when resizing MacVim window
-		autocmd VimResized * wincmd =
+    " Automatically resize splits
+    " when resizing MacVim window
+    autocmd VimResized * wincmd =
 else
-		nnoremap <M-Right> :vertical resize +5<CR>
-		nnoremap <M-Left>  :vertical resize -5<CR>
-		nnoremap <M-Up>    :resize -5<CR>
-		nnoremap <M-Down>  :resize +5<CR>
+    nnoremap <M-Right> :vertical resize +5<CR>
+    nnoremap <M-Left>  :vertical resize -5<CR>
+    nnoremap <M-Up>    :resize -5<CR>
+    nnoremap <M-Down>  :resize +5<CR>
+
+    " For terminal
+    nnoremap [1;3C     :vertical resize +5<CR>
+    nnoremap [1;3D     :vertical resize -5<CR>
+    nnoremap [1;3A     :resize -5<CR>
+    nnoremap [1;3B     :resize +5<CR>
 endif
 
 """"""""""""""""""""""""""""""""""""""""
 
 silent! :unmap <leader>b
-:noremap <leader>bw :bw<CR>
-:noremap <leader>bc :BClose<CR>
+noremap <leader>bw :bw<CR>
+noremap <leader>bc :BClose<CR>
 
-:vnoremap . :norm.<CR>
+vnoremap . :norm.<CR>
 
 " upper/lower word
 nmap <leader>uc mQviwU`Q
@@ -82,13 +104,17 @@ command! -range StripLastChar <line1>,<line2>!rev | cut -c 2- | rev
 command! -range -nargs=1 StripLastChars <line1>,<line2>!rev | cut -c <f-args>- | rev
 command! -range -nargs=1 StripFirstChars <line1>,<line2>!cut -c <f-args>-
 command! -range TrimFront <line1>,<line2>!sed 's/^[ 	]*//g'
+command! Spacify :.s/\t/    /g
+command! SpacifyAll :%!expand -t4
+command! TabifyAll :%!unexpand -t4
+command! -range AddNumbers :<line1>,<line2>!nl | sed 's/ *//g'
 
 """""""""""""""""""""""""""""""""""
 
 " System clipboard
 "vmap <Leader>y "+y
 " vmap <Leader>d "+d
-" nmap <Leader>p "+p
+nmap <Leader>pp "+p
 " nmap <Leader>P "+P
 " vmap <Leader>p "+p
 " vmap <Leader>P "+P
@@ -97,11 +123,11 @@ command! -range TrimFront <line1>,<line2>!sed 's/^[ 	]*//g'
 :iabbrev tehn then
 
 
-:set guioptions-=m  "remove menu bar
-:set guioptions-=T  "remove toolbar
-:set guioptions-=r  "remove right-hand scroll bar
-:set guioptions-=L  "remove left-hand scroll bar
-:set tabstop=4
+set guioptions-=m  "remove menu bar
+set guioptions-=T  "remove toolbar
+set guioptions-=r  "remove right-hand scroll bar
+set guioptions-=L  "remove left-hand scroll bar
+set tabstop=4
 
 colorscheme desert
 
@@ -113,21 +139,43 @@ set backupdir^=~/.vim/_backup//    " where to put backup files.
 set directory^=~/.vim/_temp//      " where to put swap files
 
 set list                      " Show invisible characters
-" List chars
-set listchars=""                  " Reset the listchars
-set listchars=tab:\ \             " a tab should display as "  ", trailing whitespace as "."
-set listchars+=trail:.            " show trailing spaces as dots
-set listchars+=extends:>          " The character to show in the last column when wrap is
-                                  " off and the line continues beyond the right of the screen
-set listchars+=precedes:<         " The character to show in the last column when wrap is
-                                  " off and the line continues beyond the left of the scree
+func! ListCharsCommon()
+    set listchars+=trail:.            " show trailing spaces as dots
+    set listchars+=extends:>          " The character to show in the last column when wrap is
+    " off and the line continues beyond the right of the screen
+    set listchars+=precedes:<         " The character to show in the last column when wrap is
+    " off and the line continues beyond the left of the scree
+    "
+endfunc
+
+func! ListCharsShowTabs()
+    " List chars
+    set listchars=""                  " Reset the listchars
+    " set listchars=tab:\ \             " a tab should display as "  ", trailing whitespace as "."
+    set listchars=tab:-.             " a tab should display as "  ", trailing whitespace as "."
+
+    call ListCharsCommon()
+endfunc
+func! ListCharsHideTabs()
+    " List chars
+    set listchars=""                  " Reset the listchars
+    set listchars=tab:\ \             " a tab should display as "  ", trailing whitespace as "."
+
+    call ListCharsCommon()
+endfunc
+command! ShowTabs :call ListCharsShowTabs()
+command! HideTabs :call ListCharsHideTabs()
+
+HideTabs
 
 set nowrap
 set incsearch
 set hlsearch
 set ignorecase
 set smartcase
+set gdefault
 set number
+set showmatch
 
 " set autochdir
 set autowriteall
@@ -145,6 +193,11 @@ noremap <leader>dgl :diffget LO<CR>
 noremap <leader>dgb :diffget BA<CR>
 noremap <leader>dgr :diffget RE<CR>
 
+if &diff
+    " diff mode only ignore whitespace in comparisons
+    set diffopt+=iwhite
+endif
+
 """""""""""" Grep settings """""""""""""
 
 set grepprg=ack\ --nogroup\ --column\ $*
@@ -160,9 +213,17 @@ let g:ycm_collect_identifiers_from_tags_files = 1
 let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
 let g:ycm_confirm_extra_conf = 0
 
-:nnoremap <leader>gto :YcmCompleter GoTo<CR>
-:nnoremap <leader>gti :YcmCompleter GoToImprecise<CR>
-:nnoremap <F12> :YcmCompleter GoToImprecise<CR>
+nnoremap <leader>gto :YcmCompleter GoTo<CR>
+nnoremap <leader>gti :YcmCompleter GoToImprecise<CR>
+nnoremap <F12> :YcmCompleter GoToImprecise<CR>
+
+""""""""""" Tabularize """""""""""""""
+
+vnoremap <leader>ta :Tabularize assignment<CR>
+
+""""""""""" Tagbar """""""""""""""
+
+nnoremap <leader>tb :TagbarToggle<CR>
 
 """"""""""" Unite """""""""""""""
 let g:unite_source_history_yank_enable = 1
@@ -188,9 +249,9 @@ nnoremap <leader>uo :Unite outline<CR>
 nnoremap <leader>of :<C-u>Unite -start-insert file/async<CR>
 
 if executable('ag')
-  let g:unite_source_grep_command = 'ag'
-  let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
-  let g:unite_source_grep_recursive_opt = ''
+    let g:unite_source_grep_command = 'ag'
+    let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
+    let g:unite_source_grep_recursive_opt = ''
 endif
 
 """"""""""" Easy motion """""""""""""""
@@ -229,31 +290,55 @@ vmap <C-v> <Plug>(expand_region_shrink)
 
 let g:ycm_semantic_triggers = {'haskell' : ['.']}
 
+let g:haskell_enable_quantification = 1
+let g:haskell_enable_recursivedo = 1
+let g:haskell_enable_arrowsyntax = 1
+let g:haskell_enable_pattern_synonyms = 1
+let g:haskell_enable_typeroles = 1
+
+let g:haskell_indent_if = 0
+let g:haskell_indent_case = 0
+let g:haskell_indent_let = 0
+let g:haskell_indent_where = 0
+let g:haskell_indent_do = 0
+let g:haskell_indent_in = 0
+
 augroup hskag
-	autocmd!
-	:autocmd FileType haskell set omnifunc=necoghc#omnifunc
+    autocmd!
+    :autocmd FileType haskell set omnifunc=necoghc#omnifunc
 augroup END
 
 """"""""""" Javascript settings """""""""""""""
 
 augroup javascriptag
-	autocmd!
-	:autocmd FileType javascript :iabbrev <buffer> iff if ()<left>
+    autocmd!
+    :autocmd FileType javascript :iabbrev <buffer> iff if ()<left>
+augroup END
+
+""""""""""" C settings """""""""""""""
+
+augroup cac
+    autocmd!
+    autocmd FileType c nnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
+    autocmd FileType c vnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
+    autocmd FileType c imap <C-cf> <ESC>:pyf ~/bin/clang-format.py<CR>i
+    autocmd FileType c inoremap jk ->
+    autocmd FileType c set shiftwidth=4 tabstop=4 expandtab
 augroup END
 
 """"""""""" C++ settings """""""""""""""
 
 augroup cppac
-	autocmd!
-	autocmd FileType cpp nnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
-	autocmd FileType cpp vnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
-	autocmd FileType cpp imap <C-cf> <ESC>:pyf ~/bin/clang-format.py<CR>i
-	autocmd FileType cpp inoremap jk ->
-	autocmd FileType cpp inoremap ::: <C-R>=expand("%:t:r") . "::"<CR>
-	autocmd FileType cpp set shiftwidth=4 tabstop=4 expandtab
-	" autocmd FileType cpp setlocal makeprg=cd\ Build\ &&\ make\ -j4
-	" autocmd BufWrite *.cpp call FormatCPP()
-	" autocmd BufWrite *.cpp Make
+    autocmd!
+    autocmd FileType cpp nnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
+    autocmd FileType cpp vnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
+    autocmd FileType cpp imap <C-cf> <ESC>:pyf ~/bin/clang-format.py<CR>i
+    autocmd FileType cpp inoremap jk ->
+    autocmd FileType cpp inoremap ::: <C-R>=expand("%:t:r") . "::"<CR>
+    autocmd FileType cpp set shiftwidth=4 tabstop=4 expandtab
+    " autocmd FileType cpp setlocal makeprg=cd\ Build\ &&\ make\ -j4
+    " autocmd BufWrite *.cpp call FormatCPP()
+    " autocmd BufWrite *.cpp Make
 augroup END
 
 func! FormatCPP()
@@ -262,33 +347,33 @@ func! FormatCPP()
     call winrestview(l:winview)
 endfunc
 
-:nnoremap <leader>fcpp :call FormatCPP()<CR>
-:noremap <leader>mm :make<CR>
-:noremap <leader>co :Copen<CR>
+nnoremap <leader>fcpp :call FormatCPP()<CR>
+noremap <leader>mm :make<CR>
+noremap <leader>co :Copen<CR>
 
 """"""""""" XML settings """""""""""""""
 
 augroup xmlag
-	autocmd FileType xml set shiftwidth=4 tabstop=4 expandtab
+    autocmd FileType xml set shiftwidth=4 tabstop=4 expandtab
 augroup END
 
 """"""""""" Arduino settings """""""""""""""
 
 au BufRead,BufNewFile *.pde set filetype=cpp
-au BufRead,BufNewFile *.ino set filetype=arduino
+au BufRead,BufNewFile *.ino set filetype=cpp
 
 augroup arduinoac
-	autocmd!
-	autocmd FileType arduino setlocal shiftwidth=4 tabstop=4 cindent
-	autocmd FileType arduino setlocal makeprg=cd\ ..\ &&\ ino\ build
-	autocmd FileType arduino nnoremap <leader>iu :exe '!cd .. && ino upload'<CR>
+    autocmd!
+    autocmd FileType arduino setlocal shiftwidth=4 tabstop=4 cindent
+    autocmd FileType arduino setlocal makeprg=cd\ ..\ &&\ ino\ build
+    autocmd FileType arduino nnoremap <leader>iu :exe '!cd .. && ino upload'<CR>
 augroup END
 
 """"""""""" Markdown settings """""""""""""""
 
 augroup markdownac
-	autocmd!
-	autocmd FileType mkd setlocal spell
+    autocmd!
+    autocmd FileType mkd setlocal spell
 augroup END
 
 func! FormatMD()
@@ -297,30 +382,41 @@ func! FormatMD()
     call winrestview(l:winview)
 endfunc
 
-:nnoremap <leader>fmd :call FormatMD()<CR>
-:vnoremap <leader>pft !par w120<CR>
+nnoremap <leader>fmd :call FormatMD()<CR>
+vnoremap <leader>pft !par w120<CR>
 
 """"""""""" Go settings """""""""""""""
 
 " let $GOPATH="/Users/graymant/Documents/Development/go"
 " let $PATH.= ':/Users/graymant/Documents/Development/go/bin:/usr/local/go/bin'
 
-
 """"""""""" CMake settings """"""""""""""""""""""
 
 augroup cmakeac
-	autocmd!
-	:autocmd BufRead,BufNewFile *.cmake,CMakeLists.txt,*.cmake.in runtime! indent/cmake.vim
-	:autocmd BufRead,BufNewFile *.cmake,CMakeLists.txt,*.cmake.in setf cmake
-	:autocmd BufRead,BufNewFile *.ctest,*.ctest.in setf cmake
+    autocmd!
+    autocmd BufRead,BufNewFile *.cmake,CMakeLists.txt,*.cmake.in runtime! indent/cmake.vim
+    autocmd BufRead,BufNewFile *.cmake,CMakeLists.txt,*.cmake.in setf cmake
+    autocmd BufRead,BufNewFile *.ctest,*.ctest.in setf cmake
 augroup END
 
 """"""""""" Python settings """"""""""""""""""""""
 
 augroup pythonac
-	autocmd!
-	" autocmd FileType cpp set shiftwidth=4 tabstop=4 expandtab
+    autocmd!
+    autocmd FileType python set shiftwidth=4 tabstop=4 expandtab
+    " autocmd FileType python vnoremap <leader>ffp :!autopep8 -<CR>
 augroup END
+
+command! ClearPypath :let $PYTHONPATH=''
+command! SetArduPypath :let $PYTHONPATH='ArduCopterTestSitl/:ArduCopterTestSitl/pysim'
+
+vnoremap <leader>ffp :!autopep8 -a -<CR>
+nnoremap <leader>ffp :%!autopep8 -a %<CR>
+
+""""""""""" Html settings """"""""""""""""""""""
+
+nnoremap <leader>fht :%!pandoc -f html -t markdown \| pandoc -f markdown -t html<CR>
+vnoremap <leader>fht :!pandoc -f html -t markdown \| pandoc -f markdown -t html<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 
@@ -373,6 +469,8 @@ Plugin 'https://github.com/oplatek/Conque-Shell'
 Plugin 'https://github.com/vim-scripts/Cppcheck-compiler.git'
 
 Plugin 'https://github.com/terryma/vim-expand-region.git'
+Plugin 'https://github.com/editorconfig/editorconfig-vim.git'
+Plugin 'https://github.com/vim-scripts/ZoomWin.git'
 
 " Tags
 Plugin 'https://github.com/vim-scripts/gtags.vim.git'
@@ -385,13 +483,14 @@ Plugin 'https://github.com/dag/vim2hs.git'
 Plugin 'https://github.com/eagletmt/neco-ghc.git'
 Plugin 'https://github.com/eagletmt/ghcmod-vim.git'
 Plugin 'https://github.com/pbrisbin/vim-syntax-shakespeare.git'
+Plugin 'https://github.com/raichoo/haskell-vim.git'
 
 " Snippets
 Plugin 'https://github.com/MarcWeber/vim-addon-mw-utils.git'
 Plugin 'https://github.com/tomtom/tlib_vim.git'
 Plugin 'https://github.com/garbas/vim-snipmate.git'
 
-  " Optional:
+" Optional:
 Plugin 'https://github.com/honza/vim-snippets.git'
 
 
@@ -406,6 +505,7 @@ Plugin 'https://github.com/jiangmiao/auto-pairs.git'
 
 Plugin 'https://github.com/mtth/scratch.vim.git'
 Plugin 'https://github.com/rhysd/vim-clang-format.git'
+Plugin 'https://github.com/flazz/vim-colorschemes.git'
 
 " git repos on your local machine (i.e. when working on your own plugin)
 "Plugin 'file:///home/gmarik/path/to/plugin'
@@ -417,4 +517,10 @@ Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 call vundle#end()            " required
 filetype plugin indent on    " required
 
+""""""""""" After plugin settings """"""""""""""""""""""
+
 :nnoremap <leader><leader> <C-^>
+
+if !has('gui_running')
+    highlight Pmenu ctermbg=200 ctermfg=white gui=bold
+endif
