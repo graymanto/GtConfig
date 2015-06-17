@@ -1,0 +1,11 @@
+*~
+.DS_Store
+*.swp
+.ycm_extra_conf.py
+.clang-format
+*.pyc
+tags
+GPATH
+GRTAGS
+GTAGS
+pylintrc
