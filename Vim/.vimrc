@@ -201,7 +201,7 @@ filetype off                  " required
 set csprg=gtags-cscope
 " cscope add /foo/bar/GTAGS
 
-"""""""""""" Vimdiff settings """""""""""""
+"""""""""""" Vimdiff merge settings """""""""""""
 
 noremap <leader>dgl :diffget LO<CR>
 noremap <leader>dgb :diffget BA<CR>
