@@ -1,8 +1,8 @@
 bindkey -e
 
 if [[ $IS_MAC -eq 1  ]]; then
-	bindkey '^[C' forward-word
-	bindkey '^[D' backward-word
+	bindkey '^[^[[C' forward-word
+	bindkey '^[^[[D' backward-word
  fi
 
 
