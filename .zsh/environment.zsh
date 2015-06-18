@@ -1,7 +1,7 @@
 if [[ $IS_MAC -eq 1  ]]; then
 	if [[ $PATH != *"gnubin"* ]]
 	then
-		export PATH="$(brew --prefix coreutils)/libexec/gnubin"
+		export PATH="$PATH:$(brew --prefix coreutils)/libexec/gnubin"
 	fi
 fi
 
