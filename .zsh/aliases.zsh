@@ -22,3 +22,5 @@ alias ls='ls --color=auto'
 alias ll='ls -la'
 alias l.='ls -d .* --color=auto'
 
+# Commands
+alias viewkeycodes='sed -n l'
