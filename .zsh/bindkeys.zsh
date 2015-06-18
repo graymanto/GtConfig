@@ -1,5 +1,12 @@
 bindkey -e
-# bindkey '^[[1;9C' forward-word
-# bindkey '^[[1;9D' backward-word
-bindkey '^[[1;9C' forward-word
-bindkey '^[[1;9D' backward-word
+
+if [[ $IS_MAC -eq 1  ]]; then
+	bindkey '^[C' forward-word
+	bindkey '^[D' backward-word
+ fi
+
+
+if [[ $IS_LINUX -eq 1  ]]; then
+	bindkey '^[[1;3C' forward-word
+	bindkey '^[[1;3D' backward-word
+fi
