@@ -18,7 +18,6 @@ if [[ $IS_MAC -eq 1  ]]; then
 fi
 
 alias refreshzshcache='hash -rf'
-alias ls='ls --color=auto'
 alias ll='ls -la'
 alias l.='ls -d .* --color=auto'
 
