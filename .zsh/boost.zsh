@@ -35,3 +35,8 @@ bindkey '^Z' fancy-ctrl-z
 fkill() {
 	ps -ef | sed 1d | fzf -m | awk '{print $2}' | xargs kill -${1:-9}
 }
+
+zstyle ':completion:*' matcher-list '' \
+  'm:{a-z\-}={A-Z\_}' \
+  'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' \
+  'r:[[:ascii:]]||[[:ascii:]]=** r:|=* m:{a-z\-}={A-Z\_}'
