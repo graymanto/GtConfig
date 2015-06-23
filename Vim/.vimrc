@@ -662,13 +662,17 @@ Plugin 'https://github.com/tpope/vim-repeat.git'
 Plugin 'https://github.com/tpope/vim-dispatch.git'
 Plugin 'https://github.com/tpope/vim-rsi.git'
 Plugin 'https://github.com/tpope/vim-endwise.git'
+Plugin 'https://github.com/tpope/vim-git.git'
 
 " plugin from http://vim-scripts.org/vim/scripts.html
+
+" Unused for now. Potentially delete.
+" Plugin 'https://github.com/kien/ctrlp.vim.git'
+" Plugin 'https://github.com/jeetsukumaran/vim-buffergator.git'
+
 Plugin 'L9'
-Plugin 'https://github.com/kien/ctrlp.vim.git'
 Plugin 'https://github.com/ddollar/nerdcommenter.git'
 Plugin 'https://github.com/scrooloose/nerdtree.git'
-Plugin 'https://github.com/jeetsukumaran/vim-buffergator.git'
 Plugin 'https://github.com/scrooloose/syntastic.git'
 Plugin 'https://github.com/ervandew/supertab.git'
 Plugin 'https://github.com/terryma/vim-multiple-cursors.git'
@@ -684,14 +688,15 @@ Plugin 'https://github.com/bronson/vim-trailing-whitespace.git'
 Plugin 'https://github.com/vim-scripts/a.vim.git'
 Plugin 'https://github.com/octol/vim-cpp-enhanced-highlight'
 Plugin 'othree/html5.vim'
-Plugin 'https://github.com/tpope/vim-git.git'
-Plugin 'https://github.com/spf13/PIV.git'
 Plugin 'https://github.com/oplatek/Conque-Shell'
 Plugin 'https://github.com/vim-scripts/Cppcheck-compiler.git'
 
 Plugin 'https://github.com/terryma/vim-expand-region.git'
 Plugin 'https://github.com/editorconfig/editorconfig-vim.git'
 Plugin 'https://github.com/vim-scripts/ZoomWin.git'
+
+" PHP
+Plugin 'https://github.com/spf13/PIV.git'
 
 " Tags
 Plugin 'https://github.com/vim-scripts/gtags.vim.git'
@@ -743,6 +748,13 @@ Plugin 'https://github.com/graymanto/vim-lua-indent.git'
 " The sparkup vim script is in a subdirectory of this repo called vim.
 " Pass the path to set the runtimepath properly.
 Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+
+""""""""""" Platform specific plugins """""""""""""""""
+if has("macunix")
+	Plugin 'https://github.com/kballard/vim-swift.git'
+endif
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
