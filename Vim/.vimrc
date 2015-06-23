@@ -361,7 +361,7 @@ augroup END
 
 augroup vimag
 	autocmd!
-	autocmd FileType vim set shiftwidth=4 tabstop=4
+	autocmd FileType vim set shiftwidth=4 tabstop=4 noexpandtab
 augroup END
 
 """"""""""" Haskell settings """""""""""""""
@@ -411,27 +411,26 @@ augroup END
 
 """"""""""" C settings """""""""""""""
 
+func! FormatCPP()
+	let l:winview = winsaveview()
+	:exe '%!clang-format -style=file'
+	call winrestview(l:winview)
+endfunc
+
 augroup cac
 	autocmd!
-	func! Format()
-		call FormatCpp()
-	endfunc
 	autocmd FileType c nnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
 	autocmd FileType c vnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
 	autocmd FileType c imap <C-cf> <ESC>:pyf ~/bin/clang-format.py<CR>i
 	autocmd FileType c inoremap jk ->
 	autocmd FileType c set shiftwidth=4 tabstop=4 expandtab
+	au FileType c nnoremap <leader>fff :call FormatCPP()<CR>
 augroup END
 
 """"""""""" C++ settings """""""""""""""
 
 augroup cppac
 	autocmd!
-	func! FormatCPP()
-		let l:winview = winsaveview()
-		:exe '%!clang-format -style=file'
-		call winrestview(l:winview)
-	endfunc
 	func! Format()
 		call FormatCpp()
 	endfunc
@@ -442,6 +441,7 @@ augroup cppac
 	autocmd FileType cpp inoremap ::: <C-R>=expand("%:t:r") . "::"<CR>
 	autocmd FileType cpp set shiftwidth=4 tabstop=4 expandtab
 	autocmd FileType cpp nnoremap <leader>fcpp :call FormatCPP()<CR>
+	au FileType cpp nnoremap <leader>fff :call FormatCPP()<CR>
 	" autocmd FileType cpp setlocal makeprg=cd\ Build\ &&\ make\ -j4
 	" autocmd BufWrite *.cpp call FormatCPP()
 	" autocmd BufWrite *.cpp Make
@@ -490,39 +490,30 @@ augroup golangac
 		:exe '%!gofmt'
 		call winrestview(l:winview)
 	endfunc
-	func! Format()
-		call FormatGoLang()
-	endfunc
 	autocmd FileType go nnoremap <leader>fgo :call FormatGoLang()<CR>
 	autocmd FileType go set shiftwidth=4 tabstop=4
-	" autocmd BufWrite *.go call FormatGoLang()
+	au FileType go nnoremap <leader>fff :call FormatGoLang()<CR>
 augroup END
 
 """"""""""" Lua settings """""""""""""""
 
 augroup luagac
 	autocmd!
-	func! Format()
+	func! FormatLua()
 		let l:winview = winsaveview()
 		" :silent! %s/\(,\)\([a-zA-Z0-9#{(]\)/\1 \2/g
 		" :silent! %s/\([=\/%\+]\)\([a-zA-Z0-9]\)/\1 \2/g
 		" :silent! %s/\([a-zA-Z0-9]\)\([=\/%\+]\)/\1 \2/g
 		normal gg=G
 		" To do...
-		" :exe '%!gofmt'
 		call winrestview(l:winview)
 	endfunc
-	" func! FormatLines()
-	" let l:winview = winsaveview()
-	" call feedkeys("=")
-	" To do...
-	" :exe '%!gofmt'
-	" call winrestview(l:winview)
-	" endfunc
 	let g:lua_complete_omni = 1
 	let g:lua_complete_dynamic = 0
 	autocmd FileType lua nnoremap <leader>fmt :call FormatLua()<CR>
 	autocmd FileType lua set shiftwidth=4 tabstop=4 expandtab
+	au FileType lua nnoremap <leader>fff :call FormatLua()<CR>
+	" vnoremap <leader>fff :call FormatLines()<CR>
 augroup END
 
 """"""""""" CMake settings """"""""""""""""""""""
@@ -764,9 +755,5 @@ filetype plugin indent on    " required
 if !has('gui_running')
 	highlight Pmenu ctermbg=200 ctermfg=white gui=bold
 endif
-
-nnoremap <leader>fff :call Format()<CR>
-" vnoremap <leader>fff :call FormatLines()<CR>
-vnoremap <leader>fff =
 
 ShowTabs
