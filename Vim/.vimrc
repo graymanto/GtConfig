@@ -516,6 +516,25 @@ augroup luagac
 	" vnoremap <leader>fff :call FormatLines()<CR>
 augroup END
 
+""""""""""" Swift settings """"""""""""""""""""""
+
+if has("macunix")
+	augroup swiftgac
+		autocmd!
+		func! FormatSwift()
+			let l:winview = winsaveview()
+			" Temporary hack to get round swift format bug. TODO: fix swift
+			" format
+			:silent! %s/\\(/##\!\!##/g
+			:exe '%!swiftformat'
+			:silent! %s/##\!\!##/\\(/g
+			call winrestview(l:winview)
+		endfunc
+		autocmd FileType swift nnoremap <leader>fff :call FormatSwift()<CR>
+		autocmd FileType swift set shiftwidth=4 tabstop=4 expandtab
+	augroup END
+endif
+
 """"""""""" CMake settings """"""""""""""""""""""
 
 augroup cmakeac
@@ -682,18 +701,18 @@ Plugin 'https://github.com/Lokaltog/vim-easymotion.git'
 Plugin 'https://github.com/Shougo/unite.vim.git'
 Plugin 'https://github.com/bling/vim-airline.git'
 Plugin 'https://github.com/Shougo/vimproc.vim.git'
-Plugin 'https://github.com/jplaut/vim-arduino-ino.git'
 Plugin 'https://github.com/Twinside/vim-cuteErrorMarker.git'
 Plugin 'https://github.com/bronson/vim-trailing-whitespace.git'
 Plugin 'https://github.com/vim-scripts/a.vim.git'
-Plugin 'https://github.com/octol/vim-cpp-enhanced-highlight'
-Plugin 'othree/html5.vim'
 Plugin 'https://github.com/oplatek/Conque-Shell'
-Plugin 'https://github.com/vim-scripts/Cppcheck-compiler.git'
 
 Plugin 'https://github.com/terryma/vim-expand-region.git'
 Plugin 'https://github.com/editorconfig/editorconfig-vim.git'
 Plugin 'https://github.com/vim-scripts/ZoomWin.git'
+
+" C++
+Plugin 'https://github.com/octol/vim-cpp-enhanced-highlight'
+Plugin 'https://github.com/vim-scripts/Cppcheck-compiler.git'
 
 " PHP
 Plugin 'https://github.com/spf13/PIV.git'
@@ -711,20 +730,32 @@ Plugin 'https://github.com/eagletmt/ghcmod-vim.git'
 Plugin 'https://github.com/pbrisbin/vim-syntax-shakespeare.git'
 Plugin 'https://github.com/raichoo/haskell-vim.git'
 
+"Other language specific
+Plugin 'https://github.com/lambdatoast/elm.vim.git'
+Plugin 'https://github.com/kongo2002/fsharp-vim.git'
+Plugin 'plasticboy/vim-markdown'
+Plugin 'https://github.com/dleonard0/pony-vim-syntax.git'
+Plugin 'https://github.com/OmniSharp/omnisharp-vim.git'
+Plugin 'https://github.com/OrangeT/vim-csharp.git'
+Plugin 'https://github.com/xolox/vim-misc.git'
+Plugin 'https://github.com/xolox/vim-lua-ftplugin.git'
+Plugin 'https://github.com/graymanto/vim-lua-indent.git'
+Plugin 'https://github.com/jplaut/vim-arduino-ino.git'
+
+" Plugin 'https://github.com/xolox/vim-lua-inspect.git'
+
 " Snippets
 Plugin 'https://github.com/MarcWeber/vim-addon-mw-utils.git'
 Plugin 'https://github.com/tomtom/tlib_vim.git'
 Plugin 'https://github.com/garbas/vim-snipmate.git'
-
-" Optional:
 Plugin 'https://github.com/honza/vim-snippets.git'
 
+" Other random
 Plugin 'godlygeek/tabular'
-Plugin 'plasticboy/vim-markdown'
-Plugin 'https://github.com/OrangeT/vim-csharp.git'
 Plugin 'https://github.com/vadimr/bclose.vim.git'
 
 Plugin 'https://github.com/suan/vim-instant-markdown.git'
+Plugin 'https://github.com/othree/html5.vim.git'
 
 Plugin 'https://github.com/jiangmiao/auto-pairs.git'
 
@@ -734,14 +765,6 @@ Plugin 'https://github.com/flazz/vim-colorschemes.git'
 
 Plugin 'https://github.com/amoffat/snake.git'
 
-Plugin 'https://github.com/dleonard0/pony-vim-syntax.git'
-
-Plugin 'https://github.com/OmniSharp/omnisharp-vim.git'
-
-Plugin 'https://github.com/xolox/vim-misc.git'
-Plugin 'https://github.com/xolox/vim-lua-ftplugin.git'
-Plugin 'https://github.com/graymanto/vim-lua-indent.git'
-" Plugin 'https://github.com/xolox/vim-lua-inspect.git'
 
 " git repos on your local machine (i.e. when working on your own plugin)
 "Plugin 'file:///home/gmarik/path/to/plugin'
@@ -751,7 +774,7 @@ Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 
 """"""""""" Platform specific plugins """""""""""""""""
 if has("macunix")
-	Plugin 'https://github.com/kballard/vim-swift.git'
+	Plugin 'https://github.com/keith/swift.vim.git'
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
