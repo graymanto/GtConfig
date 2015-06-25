@@ -23,6 +23,8 @@ nnoremap <leader>nt :NERDTreeToggle<CR>
 nnoremap <leader>ev :vsplit $MYVIMRC<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
 
+nnoremap <leader>grr :!git co %<cr>
+
 nnoremap <leader>cpps :vsplit ~/.vim/bundle/vim-snippets/snippets/cpp.snippets<cr>
 nnoremap <leader>cards :vsplit ~/.vim/bundle/vim-snippets/snippets/arduino.snippets<cr>
 
@@ -44,7 +46,6 @@ if !has('gui_running')
 		let c = nr2char(1+char2nr(c))
 	endw
 endif
-
 
 """"""""""" Resize  mode """""""""""""""
 
