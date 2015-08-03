@@ -12,6 +12,7 @@ alias httpserver='python -m SimpleHTTPServer'
 alias rmdir='rm -rf'
 alias findi='find . -iname'
 alias vcat='vimcat'
+alias pip='sudo pip'
 
 if [[ $IS_MAC -eq 1  ]]; then
 	alias xonsh='/Library/Frameworks/Python.framework/Versions/3.4/bin/xonsh'
