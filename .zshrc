@@ -60,3 +60,6 @@ source ~/.zsh/options.zsh
 source ~/.zsh/langsettings.zsh
 source ~/.zsh/fzfconfig.zsh
 source ~/.zsh/boost.zsh
+if [[ $IS_MAC -eq 1  ]]; then
+	source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
