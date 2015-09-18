@@ -1,0 +1,2 @@
+#! /bin/bash
+echo '#! /bin/bash' | cat - $1 > temp.txt && mv temp.txt $1 

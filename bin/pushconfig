@@ -1,0 +1,5 @@
+#! /bin/bash
+cd ~/GTGitHub/GtConfig
+git cm "$1"
+git up
+git push

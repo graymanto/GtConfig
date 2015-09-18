@@ -1,0 +1,5 @@
+#! /bin/bash
+echo '#! /bin/bash' > ~/bin/temp.txt
+echo $1 >> ~/bin/temp.txt
+mv ~/bin/temp.txt ~/bin/$2
+chmod a+x ~/bin/$2

@@ -1,0 +1,20 @@
+#! /bin/bash
+BNAME=$(git bno)
+
+if [ $BNAME = 'master' ]
+then
+		echo "Did you really mean to push to master?"
+		exit 1
+fi
+
+echo "Pushing to $BNAME"
+
+PUSHRESULT=$(git push 2>&1)
+
+if [[ $PUSHRESULT =~ "has no upstream branch" ]]
+then
+		echo $PUSHRESULT
+		git push --set-upstream origin $BNAME
+else
+		echo $PUSHRESULT
+fi
