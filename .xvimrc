@@ -1,0 +1,20 @@
+inoremap jj <Esc>
+nnoremap ,ww :w<CR>
+nnoremap ,ee :xccmd closeDocument<CR>
+nnoremap <space>f :xccmd openQuickly<CR>
+
+nnoremap <C-o> :xccmd goBackInHistoryByCommand<cr>
+nnoremap <C-i> :xccmd goForwardInHistoryByCommand<cr>
+nnoremap ,c<space> :xccmd commentAndUncommentCurrentLines<cr>
+nnoremap ,gto :xccmd jumpToDefinition<cr>
+
+set ignorecase
+set smartcase
+set gdefault
+
+set pasteboard
+
+set wrapscan
+set guioptions=r
+
+set clipboard=unnamed

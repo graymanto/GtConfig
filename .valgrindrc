@@ -1,0 +1,3 @@
+--memcheck:leak-check=full
+--show-reachable=yes
+--suppressions=/Users/graymant/.valgrind/mac.supp

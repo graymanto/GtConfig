@@ -1,0 +1,63 @@
+"Not implemented yet in idea
+:let mapleader = ","
+
+nmap <C-tab> :next<cr>
+nmap <C-S-tab> :previous<cr>
+
+inoremap jj <Esc>
+nmap ,noh :noh<CR>
+
+nnoremap ,qq :q<CR>
+nnoremap ,qa :qa<CR>
+nnoremap ,ww :w<CR>
+
+nnoremap ,ev :vsplit ~/.ideavimrc<cr>
+nnoremap ,sv :source ~/.ideavimrc<cr>
+nnoremap ,gto :action GotoDeclaration<cr>
+nnoremap <space>i :action GotoImplementation<cr>
+nnoremap <space>o :action GotoSymbol<cr>
+nnoremap <space>c :action GotoClass<cr>
+nnoremap ,ee :action CloseEditor<cr>
+
+nnoremap <C-o> :action Back<cr>
+nnoremap <C-i> :action Forward<cr>
+
+:vnoremap . :norm.<CR>
+
+" upper/lower word
+nmap ,uw mQviwU`Q
+nmap ,lw mQviwu`Q
+
+" upper/lower first char of word
+nmap ,U mQgewvU`Q
+nmap ,L mQgewvu`Q
+
+" Underline the current line with '='
+nmap <silent> ,ul :t.<CR>Vr=
+
+" set text wrapping toggles
+nmap <silent> ,tw :set invwrap<CR>:set wrap?<CR>
+
+" Bubble multiple lines
+vmap <C-k> [egv
+vmap <C-j> ]egv
+
+set dir-=.
+" set backupdir-=.
+" set directory-=.
+
+set backupdir^=~/.vim/_backup//    " where to put backup files.
+set directory^=~/.vim/_temp//      " where to put swap files
+
+set nowrap
+set incsearch
+set hlsearch
+set ignorecase
+set smartcase
+set number
+
+
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+nnoremap ,, <C-^>
