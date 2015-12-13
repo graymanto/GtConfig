@@ -13,5 +13,10 @@ fi
 export MONO_GAC_PREFIX=/usr/local
 export LD_LIBRARY_PATH=/usr/local/lib
 
+if [ -e  '/usr/local/Cellar/sonar-runner/2.4/libexec' ]
+then
+export SONAR_RUNNER_HOME=/usr/local/Cellar/sonar-runner/2.4/libexec
+fi
+
 # if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 export WORKON_HOME=~/.virtualenvs

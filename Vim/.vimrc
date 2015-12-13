@@ -392,6 +392,9 @@ augroup END
 augroup javascriptag
 	autocmd!
 	:autocmd FileType javascript :iabbrev <buffer> iff if ()<left>
+	let g:jsx_ext_required = 0
+	autocmd FileType Javascript nnoremap <leader>gto :TernDef<CR>
+	autocmd FileType Javascript nnoremap <space>r :TernRefs<CR>
 augroup END
 
 """"""""""" Json formatting """""""""""""""
@@ -554,10 +557,21 @@ augroup pythonac
 augroup END
 
 command! ClearPypath :let $PYTHONPATH=''
-command! SetArduPypath :let $PYTHONPATH='ArduCopterTestSitl/:ArduCopterTestSitl/pysim'
+" command! SetArduPypath :let $PYTHONPATH='ArduCopterTestSitl/:ArduCopterTestSitl/pysim'
 
 vnoremap <leader>ffp :!autopep8 -a -<CR>
 nnoremap <leader>ffp :%!autopep8 -a %<CR>
+
+""""""""""" Ruby settings """"""""""""""""""""""
+
+augroup rubyac
+	autocmd!
+	autocmd FileType ruby set shiftwidth=2 tabstop=2 expandtab
+	" autocmd FileType python vnoremap <leader>ffp :!autopep8 -<CR>
+augroup END
+
+" vnoremap <leader>ffp :!autopep8 -a -<CR>
+" nnoremap <leader>ffp :%!autopep8 -a %<CR>
 
 """"""""""" Html settings """"""""""""""""""""""
 
@@ -742,6 +756,9 @@ Plugin 'https://github.com/xolox/vim-misc.git'
 Plugin 'https://github.com/xolox/vim-lua-ftplugin.git'
 Plugin 'https://github.com/graymanto/vim-lua-indent.git'
 Plugin 'https://github.com/jplaut/vim-arduino-ino.git'
+Plugin 'mxw/vim-jsx'
+Plugin 'pangloss/vim-javascript'
+Plugin 'https://github.com/ternjs/tern_for_vim.git'
 
 " Plugin 'https://github.com/xolox/vim-lua-inspect.git'
 
