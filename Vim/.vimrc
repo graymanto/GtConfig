@@ -195,6 +195,8 @@ set showmatch
 " set autochdir
 set autowriteall
 
+let g:syntastic_javascript_checkers = ['eslint']
+
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
@@ -391,10 +393,18 @@ augroup END
 
 augroup javascriptag
 	autocmd!
+	func! FormatJs()
+		let l:winview = winsaveview()
+		normal gg=G
+		call winrestview(l:winview)
+	endfunc
+
 	:autocmd FileType javascript :iabbrev <buffer> iff if ()<left>
 	let g:jsx_ext_required = 0
 	autocmd FileType Javascript nnoremap <leader>gto :TernDef<CR>
 	autocmd FileType Javascript nnoremap <space>r :TernRefs<CR>
+	autocmd FileType Javascript set shiftwidth=4 tabstop=4 expandtab
+	au FileType Javascript nnoremap <leader>fff :call FormatJs()<CR>
 augroup END
 
 """"""""""" Json formatting """""""""""""""
@@ -495,8 +505,10 @@ augroup golangac
 		call winrestview(l:winview)
 	endfunc
 	autocmd FileType go nnoremap <leader>fgo :call FormatGoLang()<CR>
+	autocmd FileType go nnoremap <leader>gto :GoDef<CR>
 	autocmd FileType go set shiftwidth=4 tabstop=4
 	au FileType go nnoremap <leader>fff :call FormatGoLang()<CR>
+	let g:go_fmt_autosave = 0
 augroup END
 
 """"""""""" Lua settings """""""""""""""
@@ -759,6 +771,7 @@ Plugin 'https://github.com/jplaut/vim-arduino-ino.git'
 Plugin 'mxw/vim-jsx'
 Plugin 'pangloss/vim-javascript'
 Plugin 'https://github.com/ternjs/tern_for_vim.git'
+Plugin 'fatih/vim-go'
 
 " Plugin 'https://github.com/xolox/vim-lua-inspect.git'
 
