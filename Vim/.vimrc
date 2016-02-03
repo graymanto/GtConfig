@@ -25,6 +25,8 @@ nnoremap <leader>sv :source $MYVIMRC<cr>
 
 nnoremap <leader>grr :!git co %<cr>
 
+nnoremap <leader>su :execute 'sign unplace * buffer=' . bufnr('')<CR>
+
 nnoremap <leader>cpps :vsplit ~/.vim/bundle/vim-snippets/snippets/cpp.snippets<cr>
 nnoremap <leader>cards :vsplit ~/.vim/bundle/vim-snippets/snippets/arduino.snippets<cr>
 
@@ -507,7 +509,7 @@ augroup golangac
 	autocmd FileType go nnoremap <leader>fgo :call FormatGoLang()<CR>
 	autocmd FileType go nnoremap <leader>gto :GoDef<CR>
 	autocmd FileType go set shiftwidth=4 tabstop=4
-	au FileType go nnoremap <leader>fff :call FormatGoLang()<CR>
+	au FileType go nnoremap <leader>fff :GoFmt<CR>
 	let g:go_fmt_autosave = 0
 augroup END
 

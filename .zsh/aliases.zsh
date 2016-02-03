@@ -6,8 +6,7 @@ if [ -e  '~/GitHub/Nuitka/bin/nuitka' ]
 then
 	alias nuitka='~/GitHub/Nuitka/bin/nuitka'
 fi
-alias toclip='pbcopy'
-alias fromclip='pbpaste'
+
 alias httpserver='python -m SimpleHTTPServer'
 alias rmdir='rm -rf'
 alias findi='find . -iname'
@@ -16,6 +15,9 @@ alias pip='sudo pip'
 
 if [[ $IS_MAC -eq 1  ]]; then
 	alias xonsh='/Library/Frameworks/Python.framework/Versions/3.4/bin/xonsh'
+	alias evaldocker='eval "$(docker-machine env default)"'
+	alias toclip='pbcopy'
+	alias fromclip='pbpaste'
 fi
 
 alias refreshzshcache='hash -rf'
