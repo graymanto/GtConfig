@@ -397,7 +397,7 @@ augroup javascriptag
 	autocmd!
 	func! FormatJs()
 		let l:winview = winsaveview()
-		normal gg=G
+		:exe '%!js-beautify'
 		call winrestview(l:winview)
 	endfunc
 
@@ -407,16 +407,22 @@ augroup javascriptag
 	autocmd FileType Javascript nnoremap <space>r :TernRefs<CR>
 	autocmd FileType Javascript set shiftwidth=4 tabstop=4 expandtab
 	au FileType Javascript nnoremap <leader>fff :call FormatJs()<CR>
+	au FileType Javascript vnoremap <leader>fff :!js-beautify<CR>
 augroup END
 
 """"""""""" Json formatting """""""""""""""
 
-func! FormatJson()
-	let l:winview = winsaveview()
-	:exe '%!jq ''.'''
-	call winrestview(l:winview)
-endfunc
-nnoremap <leader>fjs :call FormatJson()<CR>
+augroup jsontag
+	autocmd!
+
+	func! FormatJson()
+		let l:winview = winsaveview()
+		:exe '%!jq ''.'''
+		call winrestview(l:winview)
+	endfunc
+
+	au FileType json nnoremap <leader>fff :call FormatJson()<CR>
+augroup END
 
 """"""""""" Pony settings """""""""""""""
 
