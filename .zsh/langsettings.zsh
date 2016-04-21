@@ -13,7 +13,7 @@ fi
 
 if [[ $IS_MAC -eq 1  ]]; then
 	# for asp.net
-	source ~/.dnx/dnvm/dnvm.sh
+	[ -s "~/.dnx/dnvm/dnvm.sh" ] && . "~/.dnx/dnvm/dnvm.sh" # Load dnvm
 fi
 
 if [[ $IS_MAC -eq 1  ]]; then

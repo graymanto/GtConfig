@@ -63,5 +63,3 @@ source ~/.zsh/boost.zsh
 if [[ $IS_MAC -eq 1  ]]; then
 	source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
-
-[ -s "/Users/graymant/.dnx/dnvm/dnvm.sh" ] && . "/Users/graymant/.dnx/dnvm/dnvm.sh" # Load dnvm

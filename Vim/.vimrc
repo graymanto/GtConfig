@@ -198,6 +198,7 @@ set showmatch
 set autowriteall
 
 let g:syntastic_javascript_checkers = ['eslint']
+" let g:syntastic_javascript_checkers = ['jshint']
 
 set nocompatible              " be iMproved, required
 filetype off                  " required
@@ -247,7 +248,7 @@ augroup omnisharp_commands
 	au BufRead,BufNewFile *.csx set filetype=cs
 
 	"Set autocomplete function to OmniSharp (if not using YouCompleteMe completion plugin)
-	autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
+	" autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
 
 	" Synchronous build (blocks Vim)
 	"autocmd FileType cs nnoremap <F5> :wa!<cr>:OmniSharpBuild<cr>
@@ -298,10 +299,13 @@ nnoremap <leader>tb :TagbarToggle<CR>
 let g:unite_source_history_yank_enable = 1
 
 nnoremap <space>u :Unite -start-insert file_rec/async<cr>
+nnoremap <space>i :Unite -start-insert file_rec/git<cr>
 nnoremap <leader>uunc :Unite -quick-match change<cr>
 nnoremap <space>c :Unite -quick-match change<cr>
 nnoremap <leader>u/ :Unite grep:.<cr>
+nnoremap <leader>ur :UniteResume<cr>
 nnoremap <leader>bb :Unite -quick-match buffer<cr>
+nnoremap <leader>uf :Unite function<cr>
 nnoremap <space>y :Unite -quick-match history/yank<cr>
 nnoremap <space>f :Unite -start-insert buffer<cr>
 
@@ -397,17 +401,17 @@ augroup javascriptag
 	autocmd!
 	func! FormatJs()
 		let l:winview = winsaveview()
-		:exe '%!js-beautify'
+		:exe '%!js-beautify -s 2 -n'
 		call winrestview(l:winview)
 	endfunc
 
 	:autocmd FileType javascript :iabbrev <buffer> iff if ()<left>
 	let g:jsx_ext_required = 0
-	autocmd FileType Javascript nnoremap <leader>gto :TernDef<CR>
-	autocmd FileType Javascript nnoremap <space>r :TernRefs<CR>
-	autocmd FileType Javascript set shiftwidth=4 tabstop=4 expandtab
-	au FileType Javascript nnoremap <leader>fff :call FormatJs()<CR>
-	au FileType Javascript vnoremap <leader>fff :!js-beautify<CR>
+	autocmd FileType javascript nnoremap <leader>gto :TernDef<CR>
+	autocmd FileType javascript nnoremap <space>r :TernRefs<CR>
+	autocmd FileType javascript set shiftwidth=2 tabstop=2 expandtab
+	au FileType javascript nnoremap <leader>fff :call FormatJs()<CR>
+	au FileType javascript vnoremap <leader>fff :!js-beautify -s 2 -n<CR>
 augroup END
 
 """"""""""" Json formatting """""""""""""""
@@ -517,6 +521,7 @@ augroup golangac
 	autocmd FileType go set shiftwidth=4 tabstop=4
 	au FileType go nnoremap <leader>fff :GoFmt<CR>
 	let g:go_fmt_autosave = 0
+	let g:go_fmt_command = "goimports"
 augroup END
 
 """"""""""" Lua settings """""""""""""""

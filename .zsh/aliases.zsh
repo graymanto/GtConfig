@@ -12,6 +12,8 @@ alias rmdir='rm -rf'
 alias findi='find . -iname'
 alias vcat='vimcat'
 alias pip='sudo pip'
+alias dk='docker'
+alias dco='docker-compose'
 
 if [[ $IS_MAC -eq 1  ]]; then
 	alias xonsh='/Library/Frameworks/Python.framework/Versions/3.4/bin/xonsh'

@@ -18,3 +18,12 @@ export WORKON_HOME=~/.virtualenvs
 
 export GEM_HOME=$HOME/.gem
 export PATH=$GEM_HOME/bin:$PATH
+
+if [ -e  '/usr/local/bin/direnv' ]
+then
+	eval "$(direnv hook zsh)"
+fi
+
+if [[ $IS_MAC -eq 1  ]]; then
+	source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
