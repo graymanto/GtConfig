@@ -12,6 +12,9 @@ fi
 
 export MONO_GAC_PREFIX=/usr/local
 export LD_LIBRARY_PATH=/usr/local/lib
+if [[ $IS_MAC -eq 1  ]]; then
+	export ANDROID_HOME=~/Library/Android/sdk
+fi
 
 # if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 export WORKON_HOME=~/.virtualenvs
