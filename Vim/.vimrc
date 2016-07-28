@@ -80,7 +80,7 @@ endif
 
 """"""""""""""""""""""""""""""""""""""""
 
-silent! :unmap <leader>b
+" silent! :unmap <leader>b
 noremap <leader>bw :bw<CR>
 noremap <leader>bc :BClose<CR>
 
