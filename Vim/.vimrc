@@ -297,6 +297,9 @@ nnoremap <leader>tb :TagbarToggle<CR>
 
 """"""""""" Unite """""""""""""""
 let g:unite_source_history_yank_enable = 1
+let g:unite_source_file_rec_max_cache_files = 0
+let g:unite_source_rec_async_command=['ag', '--follow',
+			\ '--nogroup', '--nocolor', '--hidden', '--path-to-agignore', '~/.agignore', '-g', '']
 
 nnoremap <space>u :Unite -start-insert file_rec/async<cr>
 nnoremap <space>i :Unite -start-insert file_rec/git<cr>
@@ -304,6 +307,8 @@ nnoremap <leader>uunc :Unite -quick-match change<cr>
 nnoremap <space>c :Unite -quick-match change<cr>
 nnoremap <leader>u/ :Unite grep:.<cr>
 nnoremap <leader>ur :UniteResume<cr>
+nnoremap <leader>un :UniteNext<cr>
+nnoremap <leader>un :UnitePrevious<cr>
 nnoremap <leader>bb :Unite -quick-match buffer<cr>
 nnoremap <leader>uf :Unite function<cr>
 nnoremap <space>y :Unite -quick-match history/yank<cr>
@@ -408,10 +413,17 @@ augroup javascriptag
 	:autocmd FileType javascript :iabbrev <buffer> iff if ()<left>
 	let g:jsx_ext_required = 0
 	autocmd FileType javascript nnoremap <leader>gto :TernDef<CR>
+	autocmd FileType javascript nnoremap <leader>gtr :TernRefs<CR>
 	autocmd FileType javascript nnoremap <space>r :TernRefs<CR>
+	autocmd FileType javascript nnoremap <leader>tr :TernRename<CR>
+	autocmd FileType javascript nnoremap <leader>tt :TernType<CR>
+	autocmd FileType javascript nnoremap <leader>tdd :TernDoc<CR>
+	autocmd FileType javascript nnoremap <leader>tdb :TernDocBrowse<CR>
+	autocmd FileType javascript nnoremap <leader>tsr :YcmCompleter RestartServer<CR>
 	autocmd FileType javascript set shiftwidth=2 tabstop=2 expandtab
 	au FileType javascript nnoremap <leader>fff :call FormatJs()<CR>
 	au FileType javascript vnoremap <leader>fff :!js-beautify -s 2 -n<CR>
+	let g:flow#enable = 0
 augroup END
 
 """"""""""" Json formatting """""""""""""""
@@ -808,6 +820,7 @@ Plugin 'https://github.com/rhysd/vim-clang-format.git'
 Plugin 'https://github.com/flazz/vim-colorschemes.git'
 
 Plugin 'https://github.com/amoffat/snake.git'
+Plugin 'flowtype/vim-flow'
 
 
 " git repos on your local machine (i.e. when working on your own plugin)
