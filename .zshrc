@@ -53,6 +53,24 @@ plugins=(git osx brew brew-cask go httpie vagrant virtualenv adb docker)
 # User configuration
 
 source $ZSH/oh-my-zsh.sh
+if [ -f ~/.zsh/ms-environment.zsh  ]; then
+	source ~/.zsh/ms-environment.zsh
+fi
+if [ -f ~/.zsh/ms-aliases.zsh  ]; then
+	source ~/.zsh/ms-aliases.zsh
+fi
+if [ -f ~/.zsh/ms-bindkeys.zsh  ]; then
+	source ~/.zsh/ms-bindkeys.zsh
+fi
+if [ -f ~/.zsh/ms-options.zsh  ]; then
+	source ~/.zsh/ms-options.zsh
+fi
+if [ -f ~/.zsh/ms-langsettings.zsh  ]; then
+	source ~/.zsh/ms-langsettings.zsh
+fi
+if [ -f ~/.zsh/ms-boosst.zsh  ]; then
+	source ~/.zsh/ms-boost.zsh
+fi
 source ~/.zsh/environment.zsh
 source ~/.zsh/aliases.zsh
 source ~/.zsh/bindkeys.zsh
@@ -60,6 +78,3 @@ source ~/.zsh/options.zsh
 source ~/.zsh/langsettings.zsh
 source ~/.zsh/fzfconfig.zsh
 source ~/.zsh/boost.zsh
-if [[ $IS_MAC -eq 1  ]]; then
-	source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi

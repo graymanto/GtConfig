@@ -406,7 +406,7 @@ augroup javascriptag
 	autocmd!
 	func! FormatJs()
 		let l:winview = winsaveview()
-		:exe '%!js-beautify -s 2 -n'
+		:exe '%!prettier --print-width 120'
 		call winrestview(l:winview)
 	endfunc
 
@@ -422,7 +422,7 @@ augroup javascriptag
 	autocmd FileType javascript nnoremap <leader>tsr :YcmCompleter RestartServer<CR>
 	autocmd FileType javascript set shiftwidth=2 tabstop=2 expandtab
 	au FileType javascript nnoremap <leader>fff :call FormatJs()<CR>
-	au FileType javascript vnoremap <leader>fff :!js-beautify -s 2 -n<CR>
+	au FileType javascript vnoremap <leader>fff :!prettier --print-width 120<CR>
 	let g:flow#enable = 0
 augroup END
 
