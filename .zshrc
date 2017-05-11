@@ -48,7 +48,7 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git osx brew brew-cask go httpie vagrant virtualenv adb docker)
+plugins=(git go httpie virtualenv adb docker)
 
 # User configuration
 
@@ -78,3 +78,5 @@ source ~/.zsh/options.zsh
 source ~/.zsh/langsettings.zsh
 source ~/.zsh/fzfconfig.zsh
 source ~/.zsh/boost.zsh
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
