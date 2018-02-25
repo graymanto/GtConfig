@@ -22,6 +22,7 @@ export PATH=$GEM_HOME/bin:$PATH
 if [ -e  '/usr/local/bin/direnv' ]
 then
 	eval "$(direnv hook zsh)"
+	export DIRENV_WARN_TIMEOUT=100s
 fi
 
 if [[ $IS_MAC -eq 1  ]]; then

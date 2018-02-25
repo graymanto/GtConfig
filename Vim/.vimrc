@@ -3,7 +3,7 @@ inoremap jj <Esc>
 imap <C-j> <Right><Plug>snipMateNextOrTrigger
 nmap <C-tab> :bnext<cr>
 nmap <C-S-tab> :bprevious<cr>
-nmap <leader>sc :SyntasticCheck<CR>
+" nmap <leader>sc :SyntasticCheck<CR>
 nmap <leader>lc :lclose<CR>
 nmap <leader>noh :noh<CR>
 nmap <C-1> :w<cr>
@@ -24,6 +24,8 @@ nnoremap <leader>ev :vsplit $MYVIMRC<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
 
 nnoremap <leader>grr :!git co %<cr>
+nnoremap <leader>ccl :ccl<cr>
+nnoremap <leader>lia :cl<cr>
 
 nnoremap <leader>su :execute 'sign unplace * buffer=' . bufnr('')<CR>
 
@@ -47,6 +49,18 @@ if !has('gui_running')
 		exec "imap \e".c." <M-".toupper(c).">"
 		let c = nr2char(1+char2nr(c))
 	endw
+else
+	" Fix problems pasting in terminal
+	let &t_SI .= "\<Esc>[?2004h"
+	let &t_EI .= "\<Esc>[?2004l"
+
+	inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+
+	function! XTermPasteBegin()
+	   set pastetoggle=<Esc>[201~
+	   set paste
+	return ""
+	endfunction
 endif
 
 """"""""""" Resize  mode """""""""""""""
@@ -129,12 +143,11 @@ command! -range AddNumbers :<line1>,<line2>!nl | sed 's/ *//g'
 """""""""""""""""""""""""""""""""""
 
 " System clipboard
-"vmap <Leader>y "+y
-" vmap <Leader>d "+d
+vmap <space>y "+y
+nmap <space>y "+yy
+nmap <Leader>yy "+yy
 nmap <Leader>pp "+p
-" nmap <Leader>P "+P
-" vmap <Leader>p "+p
-" vmap <Leader>P "+P
+nmap <space>p "+p
 
 :iabbrev waht what
 :iabbrev tehn then
@@ -196,9 +209,7 @@ set showmatch
 
 " set autochdir
 set autowriteall
-
-let g:syntastic_javascript_checkers = ['eslint']
-" let g:syntastic_javascript_checkers = ['jshint']
+set autowrite
 
 set nocompatible              " be iMproved, required
 filetype off                  " required
@@ -225,13 +236,16 @@ set grepformat=%f:%l:%c:%m
 
 """""""""""" You Complete Me options """""""""""""
 
-let g:ycm_autoclose_preview_window_after_completion = 1
+let g:ycm_autoclose_preview_window_after_completion = 0
 let g:ycm_autoclose_preview_window_after_insertion = 1
 let g:ycm_add_preview_to_completeopt = 1
 let g:ycm_collect_identifiers_from_tags_files = 1
 
 let g:ycm_global_ycm_extra_conf = '~/.ycm_extra_conf.py'
 let g:ycm_confirm_extra_conf = 0
+let g:ycm_complete_in_comments = 1
+let g:ycm_collect_identifiers_from_comments_and_strings = 1
+let g:ycm_seed_identifiers_with_syntax = 1
 
 nnoremap <leader>gto :YcmCompleter GoTo<CR>
 nnoremap <leader>gti :YcmCompleter GoToImprecise<CR>
@@ -255,7 +269,7 @@ augroup omnisharp_commands
 	" Builds can also run asynchronously with vim-dispatch installed
 	autocmd FileType cs nnoremap <leader>b :wa!<cr>:OmniSharpBuildAsync<cr>
 	" automatic syntax check on events (TextChanged requires Vim 7.4)
-	autocmd BufEnter,TextChanged,InsertLeave *.cs SyntasticCheck
+	" autocmd BufEnter,TextChanged,InsertLeave *.cs SyntasticCheck
 
 	" Automatically add new cs files to the nearest project on save
 	autocmd BufWritePost *.cs call OmniSharp#AddToProject()
@@ -311,7 +325,7 @@ nnoremap <leader>un :UniteNext<cr>
 nnoremap <leader>un :UnitePrevious<cr>
 nnoremap <leader>bb :Unite -quick-match buffer<cr>
 nnoremap <leader>uf :Unite function<cr>
-nnoremap <space>y :Unite -quick-match history/yank<cr>
+" nnoremap <space>y :Unite -quick-match history/yank<cr>
 nnoremap <space>f :Unite -start-insert buffer<cr>
 
 nnoremap <leader>gg :execute 'Unite gtags/def'<CR>
@@ -319,6 +333,7 @@ nnoremap <leader>gc :execute 'Unite gtags/context'<CR>
 nnoremap <leader>gr :execute 'Unite gtags/ref'<CR>
 nnoremap <leader>ge :execute 'Unite gtags/grep'<CR>
 vnoremap <leader>gg <ESC>:execute 'Unite gtags/def:'.GetVisualSelection()<CR>
+nnoremap <space>* :execute "Unite grep:.::<C-R><C-W>:"<CR>
 
 nnoremap <leader>uo :Unite outline<CR>
 
@@ -406,9 +421,31 @@ augroup javascriptag
 	autocmd!
 	func! FormatJs()
 		let l:winview = winsaveview()
-		:exe '%!prettier --print-width 120'
+		:exe '%!yarn -s prettier --trailing-comma es5'
 		call winrestview(l:winview)
 	endfunc
+
+	func! FormatJsNoSemis()
+		let l:winview = winsaveview()
+		:exe '%!yarn -s prettier --trailing-comma es5 --no-semi'
+		call winrestview(l:winview)
+	endfunc
+
+	func! FormatJsSnippetNoSemis()
+		silent exe "'<,'>!yarn -s prettier --trailing-comma es5 --no-semi"
+	endfunc
+
+	func! FormatJsBeutSnippetNoSemis()
+		silent exe "'<,'>!js-beautify --indent-size 2 --jslint-happy --wrap-line-length 120"
+		silent exe '%s/;//e'
+	endfunc
+
+	let g:ale_linters = {
+	\	"javascript": ["eslint"],
+	\	"cpp": ["clang", "clangtidy", "cppcheck"]
+	\}
+
+	let g:ale_cpp_clang_options = "-std=c++14 -Wall -I./include"
 
 	:autocmd FileType javascript :iabbrev <buffer> iff if ()<left>
 	let g:jsx_ext_required = 0
@@ -421,9 +458,31 @@ augroup javascriptag
 	autocmd FileType javascript nnoremap <leader>tdb :TernDocBrowse<CR>
 	autocmd FileType javascript nnoremap <leader>tsr :YcmCompleter RestartServer<CR>
 	autocmd FileType javascript set shiftwidth=2 tabstop=2 expandtab
+	au FileType javascript nnoremap <leader>jsr :silent exe '%s/;//'<CR>
 	au FileType javascript nnoremap <leader>fff :call FormatJs()<CR>
-	au FileType javascript vnoremap <leader>fff :!prettier --print-width 120<CR>
-	let g:flow#enable = 0
+	au FileType javascript nnoremap <leader>ffn :call FormatJsNoSemis()<CR>
+	au FileType javascript vnoremap <leader>fff :!prettier --trailing-comma es5 --print-width 120<CR>
+	au FileType javascript vnoremap <leader>ffn :call FormatJsSnippetNoSemis()<CR>
+	au FileType javascript vnoremap <leader>jsb :call FormatJsBeutSnippetNoSemis()<CR>
+	let g:flow#enable = 1
+	let g:flow#omnifunc = 1
+	let g:flow#timeout = 15
+augroup END
+
+""""""""""" Java settings """""""""""""""
+
+augroup java
+	autocmd!
+
+	autocmd FileType java setlocal omnifunc=javacomplete#Complete
+
+	func! FormatJson()
+		let l:winview = winsaveview()
+		:exe '%!jq ''.'''
+		call winrestview(l:winview)
+	endfunc
+
+	au FileType json nnoremap <leader>fff :call FormatJson()<CR>
 augroup END
 
 """"""""""" Json formatting """""""""""""""
@@ -530,10 +589,29 @@ augroup golangac
 	endfunc
 	autocmd FileType go nnoremap <leader>fgo :call FormatGoLang()<CR>
 	autocmd FileType go nnoremap <leader>gto :GoDef<CR>
+	autocmd FileType go nnoremap <leader>gbu :GoBuild<CR>
+	autocmd FileType go nnoremap <leader>gtt :GoTest<CR>
+	autocmd FileType go nnoremap <leader>gtf :GoTestFunc<CR>
+	autocmd FileType go nnoremap <leader>gtc :GoCoverage<CR>
+	autocmd FileType go nnoremap <leader>gli :GoImplements<CR>
+	autocmd FileType go nnoremap <leader>gla :GoAlternate<CR>
 	autocmd FileType go set shiftwidth=4 tabstop=4
+	autocmd BufWritePost *.go :GoBuild
 	au FileType go nnoremap <leader>fff :GoFmt<CR>
-	let g:go_fmt_autosave = 0
+	let g:go_fmt_autosave = 1
 	let g:go_fmt_command = "goimports"
+
+	let g:go_highlight_functions = 1
+	let g:go_highlight_methods = 1
+	let g:go_highlight_fields = 1
+	let g:go_highlight_types = 1
+	let g:go_highlight_operators = 1
+	let g:go_highlight_build_constraints = 1
+
+	" let g:go_metalinter_enabled = ['vet', 'golint', 'megacheck']
+	let g:go_metalinter_deadline = "60s"
+	let g:go_auto_type_info = 1
+	set updatetime=100
 augroup END
 
 """"""""""" Lua settings """""""""""""""
@@ -590,7 +668,8 @@ augroup END
 augroup pythonac
 	autocmd!
 	autocmd FileType python set shiftwidth=4 tabstop=4 expandtab
-	" autocmd FileType python vnoremap <leader>ffp :!autopep8 -<CR>
+	autocmd FileType python vnoremap <leader>fff :!autopep8 -a -<CR>
+	autocmd FileType python nnoremap <leader>fff :%!autopep8 -a %<CR>
 augroup END
 
 command! ClearPypath :let $PYTHONPATH=''
@@ -744,7 +823,8 @@ Plugin 'https://github.com/tpope/vim-git.git'
 Plugin 'L9'
 Plugin 'https://github.com/ddollar/nerdcommenter.git'
 Plugin 'https://github.com/scrooloose/nerdtree.git'
-Plugin 'https://github.com/scrooloose/syntastic.git'
+" Plugin 'https://github.com/scrooloose/syntastic.git'
+Plugin 'w0rp/ale'
 Plugin 'https://github.com/ervandew/supertab.git'
 Plugin 'https://github.com/terryma/vim-multiple-cursors.git'
 Plugin 'https://github.com/majutsushi/tagbar.git'
@@ -797,6 +877,8 @@ Plugin 'mxw/vim-jsx'
 Plugin 'pangloss/vim-javascript'
 Plugin 'https://github.com/ternjs/tern_for_vim.git'
 Plugin 'fatih/vim-go'
+Plugin 'artur-shaik/vim-javacomplete2'
+Plugin 'hsanson/vim-android'
 
 " Plugin 'https://github.com/xolox/vim-lua-inspect.git'
 
@@ -847,5 +929,3 @@ filetype plugin indent on    " required
 if !has('gui_running')
 	highlight Pmenu ctermbg=200 ctermfg=white gui=bold
 endif
-
-ShowTabs
