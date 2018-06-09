@@ -1,23 +1,14 @@
 # Random extra functionality
 #
-code () {
-	if [[ $# = 0  ]]
-	then
-		open -a "Visual Studio Code"
-	else
-		[[ $1 = /*  ]] && F="$1" || F="$PWD/${1#./}"
-		open -a "Visual Studio Code" --args "$F"
-	fi
-}
 
 fancy-ctrl-z () {
-	if [[ $#BUFFER -eq 0  ]]; then
-		BUFFER="fg"
-		zle accept-line
-	else
-		zle push-input
-		zle clear-screen
-	fi
+if [[ $#BUFFER -eq 0  ]]; then
+	BUFFER="fg"
+	zle accept-line
+else
+	zle push-input
+	zle clear-screen
+fi
 }
 
 hex2dec(){
@@ -37,6 +28,6 @@ fkill() {
 }
 
 zstyle ':completion:*' matcher-list '' \
-  'm:{a-z\-}={A-Z\_}' \
-  'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' \
-  'r:[[:ascii:]]||[[:ascii:]]=** r:|=* m:{a-z\-}={A-Z\_}'
+	'm:{a-z\-}={A-Z\_}' \
+	'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' \
+	'r:[[:ascii:]]||[[:ascii:]]=** r:|=* m:{a-z\-}={A-Z\_}'

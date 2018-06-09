@@ -9,9 +9,18 @@ alias dk='docker'
 alias dco='docker-compose'
 
 if [[ $IS_MAC -eq 1  ]]; then
-	alias xonsh='/Library/Frameworks/Python.framework/Versions/3.4/bin/xonsh'
 	alias toclip='pbcopy'
 	alias fromclip='pbpaste'
+
+	code () {
+		if [[ $# = 0  ]]
+		then
+			open -a "Visual Studio Code"
+		else
+			[[ $1 = /*  ]] && F="$1" || F="$PWD/${1#./}"
+			open -a "Visual Studio Code" --args "$F"
+		fi
+	}
 fi
 
 alias refreshzshcache='hash -rf'
