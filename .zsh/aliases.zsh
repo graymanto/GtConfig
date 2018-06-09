@@ -25,7 +25,7 @@ fi
 
 alias refreshzshcache='hash -rf'
 alias ll='ls -la'
-alias l.='ls -d .* --color=auto'
+alias l.='ls -d .*'
 
 # Commands
 alias viewkeycodes='sed -n l'
