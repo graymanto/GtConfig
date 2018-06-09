@@ -11,6 +11,10 @@ else
 fi
 }
 
+replaceinfiles() {
+    sed -i -e 's/$1/$2/g' $3
+}
+
 hex2dec(){
 	echo "ibase=16; $@"|bc
 }

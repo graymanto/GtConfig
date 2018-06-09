@@ -12,13 +12,6 @@ alias ll='ls -la'
 ## Show hidden files ##
 alias l.='ls -d .* --color=auto'
 
-export ptdev=~/Documents/Development/PhotoThing/website/
-export ptsrc=~/Documents/Development/PhotoThing/website/src/
-export ptweb=/Users/graymant/Documents/Development/PhotoThing/website/src/main/webapp/
-export devhome=/Users/graymant/Documents/Development
-export GOPATH=$HOME/Documents/Development/go
-export PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH:$GOPATH/bin"
-
 SumLines() {  # iterating over stdin - similar to awk
     local sum=0
     local line=””
@@ -40,8 +33,3 @@ CompareUrls() {
 ReplaceInFiles() {
     sed -i -e 's/$1/$2/g' $3
 }
-
-# Initialize the 'hop' script
- source /System/Library/Frameworks/Python.framework/Versions/2.7/hop/hop.bash
-# Define an entry point for the lua script version of hop
-alias hop-lua-script="LUA_PATH=/System/Library/Frameworks/Python.framework/Versions/2.7/hop/json.lua /System/Library/Frameworks/Python.framework/Versions/2.7/hop/hop.lua"
