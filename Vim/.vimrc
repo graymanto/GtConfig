@@ -50,17 +50,46 @@ if !has('gui_running')
 		let c = nr2char(1+char2nr(c))
 	endw
 else
-	" Fix problems pasting in terminal
-	let &t_SI .= "\<Esc>[?2004h"
-	let &t_EI .= "\<Esc>[?2004l"
+	let s:screen  = &term =~ 'screen'
+	let s:tmux = &term =~ 'tmux'
+	let s:xterm   = &term =~ 'xterm'
 
-	inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+	" make use of Xterm "bracketed paste mode"
+	" http://www.xfree86.org/current/ctlseqs.html#Bracketed%20Paste%20Mode
+	" http://stackoverflow.com/questions/5585129
+	if s:screen || s:xterm || s:tmux
+		function! s:BeginXTermPaste(ret)
+			set pastetoggle=<f29>
+			set paste
+			return a:ret
+		endfunction
 
-	function! XTermPasteBegin()
-	   set pastetoggle=<Esc>[201~
-	   set paste
-	return ""
-	endfunction
+		" enable bracketed paste mode on entering Vim
+		let &t_ti .= "\e[?2004h"
+
+		" disable bracketed paste mode on leaving Vim
+		let &t_te = "\e[?2004l" . &t_te
+
+		let &t_SI .= "\<Esc>[?2004h"
+		let &t_EI .= "\<Esc>[?2004l"
+
+		set pastetoggle=<Esc>[201~
+
+		inoremap <special> <expr> <Esc>[200~ BeginXTermPaste("")
+		inoremap <expr> <Esc>[200~ <SID>BeginXTermPaste("")
+		nnoremap <expr> <Esc>[200~ <SID>BeginXTermPaste("i")
+		vnoremap <expr> <Esc>[200~ <SID>BeginXTermPaste("c")
+		cnoremap <Esc>[200~ <nop>
+		cnoremap <Esc>[201~ <nop>
+
+		execute "set <f28>=\<Esc>[200~"
+		execute "set <f29>=\<Esc>[201~"
+		map <expr> <f28> XTermPasteBegin("i")
+		imap <expr> <f28> XTermPasteBegin("")
+		vmap <expr> <f28> XTermPasteBegin("c")
+		cmap <f28> <nop>
+		cmap <f29> <nop>
+	endif
 endif
 
 """"""""""" Resize  mode """""""""""""""
@@ -214,6 +243,10 @@ set autowrite
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
+"""""""""""" Save session settings """""""""""""
+
+let g:session_autosave = 'no'
+
 """""""""""" Tag settings """""""""""""
 set csprg=gtags-cscope
 " cscope add /foo/bar/GTAGS
@@ -231,7 +264,7 @@ endif
 
 """""""""""" Grep settings """""""""""""
 
-set grepprg=ack\ --nogroup\ --column\ $*
+set grepprg=ag\ --nogroup\ --column\ $*
 set grepformat=%f:%l:%c:%m
 
 """""""""""" You Complete Me options """""""""""""
@@ -246,6 +279,8 @@ let g:ycm_confirm_extra_conf = 0
 let g:ycm_complete_in_comments = 1
 let g:ycm_collect_identifiers_from_comments_and_strings = 1
 let g:ycm_seed_identifiers_with_syntax = 1
+let g:ycm_server_keep_logfiles = 1
+let g:ycm_server_log_level = 'debug'
 
 nnoremap <leader>gto :YcmCompleter GoTo<CR>
 nnoremap <leader>gti :YcmCompleter GoToImprecise<CR>
@@ -253,52 +288,52 @@ nnoremap <F12> :YcmCompleter GoToImprecise<CR>
 
 """"""""""" Omnisharp """""""""""""""
 
-let g:OmniSharp_selector_ui = 'unite'
-let g:OmniSharp_server_type = 'roslyn'
+" let g:OmniSharp_selector_ui = 'unite'
+" let g:OmniSharp_server_type = 'roslyn'
 
-augroup omnisharp_commands
-	autocmd!
+" augroup omnisharp_commands
+"     autocmd!
 
-	au BufRead,BufNewFile *.csx set filetype=cs
+"     au BufRead,BufNewFile *.csx set filetype=cs
 
-	"Set autocomplete function to OmniSharp (if not using YouCompleteMe completion plugin)
-	" autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
+"     "Set autocomplete function to OmniSharp (if not using YouCompleteMe completion plugin)
+"     " autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
 
-	" Synchronous build (blocks Vim)
-	"autocmd FileType cs nnoremap <F5> :wa!<cr>:OmniSharpBuild<cr>
-	" Builds can also run asynchronously with vim-dispatch installed
-	autocmd FileType cs nnoremap <leader>b :wa!<cr>:OmniSharpBuildAsync<cr>
-	" automatic syntax check on events (TextChanged requires Vim 7.4)
-	" autocmd BufEnter,TextChanged,InsertLeave *.cs SyntasticCheck
+"     " Synchronous build (blocks Vim)
+"     "autocmd FileType cs nnoremap <F5> :wa!<cr>:OmniSharpBuild<cr>
+"     " Builds can also run asynchronously with vim-dispatch installed
+"     autocmd FileType cs nnoremap <leader>b :wa!<cr>:OmniSharpBuildAsync<cr>
+"     " automatic syntax check on events (TextChanged requires Vim 7.4)
+"     " autocmd BufEnter,TextChanged,InsertLeave *.cs SyntasticCheck
 
-	" Automatically add new cs files to the nearest project on save
-	autocmd BufWritePost *.cs call OmniSharp#AddToProject()
+"     " Automatically add new cs files to the nearest project on save
+"     autocmd BufWritePost *.cs call OmniSharp#AddToProject()
 
-	"show type information automatically when the cursor stops moving
-	autocmd CursorHold *.cs call OmniSharp#TypeLookupWithoutDocumentation()
+"     "show type information automatically when the cursor stops moving
+"     autocmd CursorHold *.cs call OmniSharp#TypeLookupWithoutDocumentation()
 
-	"The following commands are contextual, based on the current cursor position.
+"     "The following commands are contextual, based on the current cursor position.
 
-	autocmd FileType cs nnoremap gd :OmniSharpGotoDefinition<cr>
-	autocmd FileType cs nnoremap <leader>fi :OmniSharpFindImplementations<cr>
-	autocmd FileType cs nnoremap <leader>ft :OmniSharpFindType<cr>
-	autocmd FileType cs nnoremap <leader>fs :OmniSharpFindSymbol<cr>
-	autocmd FileType cs nnoremap <leader>fu :OmniSharpFindUsages<cr>
-	"finds members in the current buffer
-	autocmd FileType cs nnoremap <leader>fm :OmniSharpFindMembers<cr>
-	" cursor can be anywhere on the line containing an issue
-	" autocmd FileType cs nnoremap <leader>x  :OmniSharpFixIssue<cr>
-	" autocmd FileType cs nnoremap <leader>fx :OmniSharpFixUsings<cr>
-	" autocmd FileType cs nnoremap <leader>tt :OmniSharpTypeLookup<cr>
-	" autocmd FileType cs nnoremap <leader>dc :OmniSharpDocumentation<cr>
-	"navigate up by method/property/field
-	" autocmd FileType cs nnoremap <C-K> :OmniSharpNavigateUp<cr>
-	"navigate down by method/property/field
-	" autocmd FileType cs nnoremap <C-J> :OmniSharpNavigateDown<cr>
+"     autocmd FileType cs nnoremap gd :OmniSharpGotoDefinition<cr>
+"     autocmd FileType cs nnoremap <leader>fi :OmniSharpFindImplementations<cr>
+"     autocmd FileType cs nnoremap <leader>ft :OmniSharpFindType<cr>
+"     autocmd FileType cs nnoremap <leader>fs :OmniSharpFindSymbol<cr>
+"     autocmd FileType cs nnoremap <leader>fu :OmniSharpFindUsages<cr>
+"     "finds members in the current buffer
+"     autocmd FileType cs nnoremap <leader>fm :OmniSharpFindMembers<cr>
+"     " cursor can be anywhere on the line containing an issue
+"     " autocmd FileType cs nnoremap <leader>x  :OmniSharpFixIssue<cr>
+"     " autocmd FileType cs nnoremap <leader>fx :OmniSharpFixUsings<cr>
+"     " autocmd FileType cs nnoremap <leader>tt :OmniSharpTypeLookup<cr>
+"     " autocmd FileType cs nnoremap <leader>dc :OmniSharpDocumentation<cr>
+"     "navigate up by method/property/field
+"     " autocmd FileType cs nnoremap <C-K> :OmniSharpNavigateUp<cr>
+"     "navigate down by method/property/field
+"     " autocmd FileType cs nnoremap <C-J> :OmniSharpNavigateDown<cr>
 
-	autocmd FileType cs set shiftwidth=4 tabstop=4 expandtab
+"     autocmd FileType cs set shiftwidth=4 tabstop=4 expandtab
 
-augroup END
+" augroup END
 
 
 """"""""""" Tabularize """""""""""""""
@@ -313,7 +348,7 @@ nnoremap <leader>tb :TagbarToggle<CR>
 let g:unite_source_history_yank_enable = 1
 let g:unite_source_file_rec_max_cache_files = 0
 let g:unite_source_rec_async_command=['ag', '--follow',
-			\ '--nogroup', '--nocolor', '--hidden', '--path-to-agignore', '~/.agignore', '-g', '']
+			\ '--nogroup', '--nocolor', '--hidden', '--path-to-ignore', '~/.agignore', '-g', '']
 
 nnoremap <space>u :Unite -start-insert file_rec/async<cr>
 nnoremap <space>i :Unite -start-insert file_rec/git<cr>
@@ -347,6 +382,8 @@ if executable('ag')
 	let g:unite_source_grep_recursive_opt = ''
 endif
 
+let g:lsp_async_completion = 1
+
 """"""""""" Easy motion """""""""""""""
 
 let g:EasyMotion_do_mapping = 0 " Disable default mappings
@@ -378,6 +415,39 @@ map <space>h <Plug>(easymotion-linebackward)
 
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
+
+""""""""""" ALE settings """"""""""""""""""""""
+
+let g:ale_cpp_clang_options = "-std=c++14 -Wall -I./include"
+let g:ale_cpp_clangtidy_checks = ['-*',
+			\ 'performance-*',
+			\ 'modernize-*',
+			\ 'portability-*',
+			\ 'readability-*',
+			\ 'cert-*',
+			\ 'misc-*',
+			\ 'bugprone-*',
+			\ 'clang-analyzer-*']
+" \ 'cppcoreguidelines-*',
+" \ 'hicpp-*',
+let g:ale_c_clangtidy_checks = ['-*',
+			\ 'performance-*',
+			\ 'clang-analyzer-*']
+" \ 'hicpp-*',
+
+let g:ale_linters = {
+			\	"javascript": ["eslint"],
+			\	"cpp": ["clang", "clang-format", "clangtidy", "cppcheck"],
+			\	"c": ["clang", "clang-format", "clangtidy", "cppcheck"],
+			\}
+
+let g:ale_fixers = {
+			\   'c': ['clang-format'],
+			\   'cpp': ['clang-format'],
+			\   'javascript': ['eslint'],
+			\}
+
+let g:ale_fix_on_save = 1
 
 """"""""""" Zsh settings """"""""""""""""""""""
 
@@ -419,33 +489,34 @@ augroup END
 
 augroup javascriptag
 	autocmd!
+	if executable('flow-language-server')
+		au User lsp_setup call lsp#register_server({
+			\ 'name': 'flow-language-server',
+			\ 'cmd': {server_info->[&shell, &shellcmdflag, 'flow-language-server --stdio']},
+			\ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), '.flowconfig'))},
+			\ 'whitelist': ['javascript'],
+			\ })
+	endif
 	func! FormatJs()
 		let l:winview = winsaveview()
-		:exe '%!yarn -s prettier --trailing-comma es5'
+		:exe '%!npx -q prettier --parser babylon --trailing-comma es5'
 		call winrestview(l:winview)
 	endfunc
 
 	func! FormatJsNoSemis()
 		let l:winview = winsaveview()
-		:exe '%!yarn -s prettier --trailing-comma es5 --no-semi'
+		:exe '%!npx -q prettier --parser babylon --trailing-comma es5 --no-semi'
 		call winrestview(l:winview)
 	endfunc
 
 	func! FormatJsSnippetNoSemis()
-		silent exe "'<,'>!yarn -s prettier --trailing-comma es5 --no-semi"
+		silent exe "'<,'>!npx -q prettier --parser babylon --trailing-comma es5 --no-semi"
 	endfunc
 
 	func! FormatJsBeutSnippetNoSemis()
 		silent exe "'<,'>!js-beautify --indent-size 2 --jslint-happy --wrap-line-length 120"
 		silent exe '%s/;//e'
 	endfunc
-
-	let g:ale_linters = {
-	\	"javascript": ["eslint"],
-	\	"cpp": ["clang", "clangtidy", "cppcheck"]
-	\}
-
-	let g:ale_cpp_clang_options = "-std=c++14 -Wall -I./include"
 
 	:autocmd FileType javascript :iabbrev <buffer> iff if ()<left>
 	let g:jsx_ext_required = 0
@@ -460,8 +531,9 @@ augroup javascriptag
 	autocmd FileType javascript set shiftwidth=2 tabstop=2 expandtab
 	au FileType javascript nnoremap <leader>jsr :silent exe '%s/;//'<CR>
 	au FileType javascript nnoremap <leader>fff :call FormatJs()<CR>
+	au FileType javascript.jsx nnoremap <leader>fff :call FormatJs()<CR>
 	au FileType javascript nnoremap <leader>ffn :call FormatJsNoSemis()<CR>
-	au FileType javascript vnoremap <leader>fff :!prettier --trailing-comma es5 --print-width 120<CR>
+	au FileType javascript vnoremap <leader>fff :!prettier --trailing-comma es5<CR>
 	au FileType javascript vnoremap <leader>ffn :call FormatJsSnippetNoSemis()<CR>
 	au FileType javascript vnoremap <leader>jsb :call FormatJsBeutSnippetNoSemis()<CR>
 	let g:flow#enable = 1
@@ -474,15 +546,15 @@ augroup END
 augroup java
 	autocmd!
 
-	autocmd FileType java setlocal omnifunc=javacomplete#Complete
+	" autocmd FileType java setlocal omnifunc=javacomplete#Complete
 
-	func! FormatJson()
-		let l:winview = winsaveview()
-		:exe '%!jq ''.'''
-		call winrestview(l:winview)
-	endfunc
+	" func! FormatJson()
+	"     let l:winview = winsaveview()
+	"     :exe '%!jq ''.'''
+	"     call winrestview(l:winview)
+	" endfunc
 
-	au FileType json nnoremap <leader>fff :call FormatJson()<CR>
+	" au FileType json nnoremap <leader>fff :call FormatJson()<CR>
 augroup END
 
 """"""""""" Json formatting """""""""""""""
@@ -531,8 +603,6 @@ augroup cppac
 	func! Format()
 		call FormatCpp()
 	endfunc
-	autocmd FileType cpp nnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
-	autocmd FileType cpp vnoremap <leader>fcc :pyf ~/bin/clang-format.py<CR>
 	autocmd FileType cpp imap <C-cf> <ESC>:pyf ~/bin/clang-format.py<CR>i
 	autocmd FileType cpp inoremap jk ->
 	autocmd FileType cpp inoremap ::: <C-R>=expand("%:t:r") . "::"<CR>
@@ -542,6 +612,7 @@ augroup cppac
 	" autocmd FileType cpp setlocal makeprg=cd\ Build\ &&\ make\ -j4
 	" autocmd BufWrite *.cpp call FormatCPP()
 	" autocmd BufWrite *.cpp Make
+	"
 augroup END
 
 """"""""""" XML settings """""""""""""""
@@ -596,7 +667,7 @@ augroup golangac
 	autocmd FileType go nnoremap <leader>gli :GoImplements<CR>
 	autocmd FileType go nnoremap <leader>gla :GoAlternate<CR>
 	autocmd FileType go set shiftwidth=4 tabstop=4
-	autocmd BufWritePost *.go :GoBuild
+	"autocmd BufWritePost *.go :GoBuild
 	au FileType go nnoremap <leader>fff :GoFmt<CR>
 	let g:go_fmt_autosave = 1
 	let g:go_fmt_command = "goimports"
@@ -867,7 +938,7 @@ Plugin 'https://github.com/lambdatoast/elm.vim.git'
 Plugin 'https://github.com/kongo2002/fsharp-vim.git'
 Plugin 'plasticboy/vim-markdown'
 Plugin 'https://github.com/dleonard0/pony-vim-syntax.git'
-Plugin 'https://github.com/OmniSharp/omnisharp-vim.git'
+" Plugin 'https://github.com/OmniSharp/omnisharp-vim.git'
 Plugin 'https://github.com/OrangeT/vim-csharp.git'
 Plugin 'https://github.com/xolox/vim-misc.git'
 Plugin 'https://github.com/xolox/vim-lua-ftplugin.git'
@@ -877,7 +948,7 @@ Plugin 'mxw/vim-jsx'
 Plugin 'pangloss/vim-javascript'
 Plugin 'https://github.com/ternjs/tern_for_vim.git'
 Plugin 'fatih/vim-go'
-Plugin 'artur-shaik/vim-javacomplete2'
+" Plugin 'artur-shaik/vim-javacomplete2'
 Plugin 'hsanson/vim-android'
 
 " Plugin 'https://github.com/xolox/vim-lua-inspect.git'
@@ -900,8 +971,12 @@ Plugin 'https://github.com/jiangmiao/auto-pairs.git'
 Plugin 'https://github.com/mtth/scratch.vim.git'
 Plugin 'https://github.com/rhysd/vim-clang-format.git'
 Plugin 'https://github.com/flazz/vim-colorschemes.git'
+Plugin 'luochen1990/rainbow'
+Plugin 'prabirshrestha/async.vim'
+Plugin 'prabirshrestha/vim-lsp'
+Plugin 'xolox/vim-session'
 
-Plugin 'https://github.com/amoffat/snake.git'
+" Plugin 'https://github.com/amoffat/snake.git'
 Plugin 'flowtype/vim-flow'
 
 

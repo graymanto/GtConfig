@@ -1,3 +1,5 @@
+# zmodload zsh/zprof
+
 source ~/.zsh/checks.zsh
 
 # Path to your oh-my-zsh installation.
@@ -14,10 +16,10 @@ ZSH_THEME="prompttest"
 # CASE_SENSITIVE="true"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
+#DISABLE_AUTO_UPDATE="true"
 
 # Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
+export UPDATE_ZSH_DAYS=90
 
 # Uncomment the following line to disable colors in ls.
 # DISABLE_LS_COLORS="true"
@@ -26,7 +28,7 @@ ZSH_THEME="prompttest"
 # DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
-ENABLE_CORRECTION="true"
+ENABLE_CORRECTION="false"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
 COMPLETION_WAITING_DOTS="true"
@@ -48,11 +50,22 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git go httpie virtualenv adb docker)
+plugins=(gitfast httpie virtualenv adb docker yarn npm tmux git-extras git-remote-branch github gitignore gnu-utils golang yarn cp colorize dirhistory postgres )
+if [[ $IS_MAC -eq 1  ]]; then
+	source ~/.zsh/plugins-mac.zsh
+fi
+if [ -f ~/.zsh/ms-plugins.zsh  ]; then
+	source ~/.zsh/ms-plugins.zsh
+fi
 
 # User configuration
 
+lazy_source () {
+    eval "$1 () { [ -f $2 ] && source $2 && $1 \$@ }"
+}
+
 source $ZSH/oh-my-zsh.sh
+
 if [ -f ~/.zsh/ms-environment.zsh  ]; then
 	source ~/.zsh/ms-environment.zsh
 fi
@@ -79,4 +92,4 @@ source ~/.zsh/langsettings.zsh
 source ~/.zsh/fzfconfig.zsh
 source ~/.zsh/boost.zsh
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# zprof
