@@ -246,6 +246,7 @@ filetype off                  " required
 """""""""""" Save session settings """""""""""""
 
 let g:session_autosave = 'no'
+let g:session_autoload = 'no'
 
 """""""""""" Tag settings """""""""""""
 set csprg=gtags-cscope
