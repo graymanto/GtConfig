@@ -419,7 +419,7 @@ vmap <C-v> <Plug>(expand_region_shrink)
 
 """"""""""" ALE settings """"""""""""""""""""""
 
-let g:ale_cpp_clang_options = "-std=c++14 -Wall -I./include"
+let g:ale_cpp_clang_options = "-std=c++14 -Wno-c++11-extensions -Wall -I./include"
 let g:ale_cpp_clangtidy_checks = ['-*',
 			\ 'performance-*',
 			\ 'modernize-*',
@@ -436,9 +436,11 @@ let g:ale_c_clangtidy_checks = ['-*',
 			\ 'clang-analyzer-*']
 " \ 'hicpp-*',
 
+" \	"cpp": ["clang", "clang-format", "clangtidy", "cppcheck"],
+
 let g:ale_linters = {
 			\	"javascript": ["eslint"],
-			\	"cpp": ["clang", "clang-format", "clangtidy", "cppcheck"],
+			\	"cpp": ["clang-format", "clangtidy"],
 			\	"c": ["clang", "clang-format", "clangtidy", "cppcheck"],
 			\}
 
@@ -449,6 +451,9 @@ let g:ale_fixers = {
 			\}
 
 let g:ale_fix_on_save = 1
+let g:ale_echo_msg_error_str = 'E'
+let g:ale_echo_msg_warning_str = 'W'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
 
 """"""""""" Zsh settings """"""""""""""""""""""
 
