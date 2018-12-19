@@ -351,18 +351,18 @@ let g:unite_source_file_rec_max_cache_files = 0
 let g:unite_source_rec_async_command=['ag', '--follow',
 			\ '--nogroup', '--nocolor', '--hidden', '--path-to-ignore', '~/.agignore', '-g', '']
 
-nnoremap <space>u :Unite -start-insert file_rec/async<cr>
+nnoremap <space>u :silent up \| :Unite -start-insert file_rec/async<cr>
 nnoremap <space>i :Unite -start-insert file_rec/git<cr>
 nnoremap <leader>uunc :Unite -quick-match change<cr>
 nnoremap <space>c :Unite -quick-match change<cr>
-nnoremap <leader>u/ :Unite grep:.<cr>
+nnoremap <leader>u/ :silent up \| :Unite grep:.<cr>
 nnoremap <leader>ur :UniteResume<cr>
 nnoremap <leader>un :UniteNext<cr>
 nnoremap <leader>un :UnitePrevious<cr>
 nnoremap <leader>bb :Unite -quick-match buffer<cr>
 nnoremap <leader>uf :Unite function<cr>
 " nnoremap <space>y :Unite -quick-match history/yank<cr>
-nnoremap <space>f :Unite -start-insert buffer<cr>
+nnoremap <space>f :silent up \| :Unite -start-insert buffer<cr>
 
 nnoremap <leader>gg :execute 'Unite gtags/def'<CR>
 nnoremap <leader>gc :execute 'Unite gtags/context'<CR>
@@ -384,6 +384,11 @@ if executable('ag')
 endif
 
 let g:lsp_async_completion = 1
+let g:lsp_signs_enabled = 0         " enable signs
+let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
+let g:lsp_signs_error = {'text': '✗'}
+let g:lsp_log_verbose = 1
+let g:lsp_log_file = expand('/tmp/vim-lsp.log')
 
 """"""""""" Easy motion """""""""""""""
 
@@ -453,7 +458,7 @@ let g:ale_fixers = {
 let g:ale_fix_on_save = 1
 let g:ale_echo_msg_error_str = 'E'
 let g:ale_echo_msg_warning_str = 'W'
-let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%] %code%'
 
 """"""""""" Zsh settings """"""""""""""""""""""
 
@@ -493,16 +498,24 @@ augroup END
 
 """"""""""" Javascript settings """""""""""""""
 
+if executable('flow-language-server')
+	au User lsp_setup call lsp#register_server({
+		\ 'name': 'flow-language-server',
+		\ 'cmd': {server_info->[&shell, &shellcmdflag, 'flow-language-server --stdio --try-flow-bin']},
+		\ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), '.flowconfig'))},
+		\ 'whitelist': ['javascript', 'javascript.jsx'],
+		\ })
+	autocmd FileType javascript setlocal omnifunc=lsp#complete
+	autocmd FileType javascript.jsx setlocal omnifunc=lsp#complete
+endif
+
+" let g:LanguageClient_serverCommands = {
+"       \ 'javascript': ['flow', 'lsp', '--from', './node_modules/.bin'],
+"       \ 'javascript.jsx': ['flow', 'lsp', '--from', './node_modules/.bin'],
+"       \}
+
 augroup javascriptag
 	autocmd!
-	if executable('flow-language-server')
-		au User lsp_setup call lsp#register_server({
-			\ 'name': 'flow-language-server',
-			\ 'cmd': {server_info->[&shell, &shellcmdflag, 'flow-language-server --stdio']},
-			\ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), '.flowconfig'))},
-			\ 'whitelist': ['javascript'],
-			\ })
-	endif
 	func! FormatJs()
 		let l:winview = winsaveview()
 		:exe '%!npx -q prettier --parser babylon --trailing-comma es5'
@@ -526,20 +539,32 @@ augroup javascriptag
 
 	:autocmd FileType javascript :iabbrev <buffer> iff if ()<left>
 	let g:jsx_ext_required = 0
-	autocmd FileType javascript nnoremap <leader>gto :TernDef<CR>
-	autocmd FileType javascript nnoremap <leader>gtr :TernRefs<CR>
-	autocmd FileType javascript nnoremap <space>r :TernRefs<CR>
-	autocmd FileType javascript nnoremap <leader>tr :TernRename<CR>
-	autocmd FileType javascript nnoremap <leader>tt :TernType<CR>
-	autocmd FileType javascript nnoremap <leader>tdd :TernDoc<CR>
-	autocmd FileType javascript nnoremap <leader>tdb :TernDocBrowse<CR>
-	autocmd FileType javascript nnoremap <leader>tsr :YcmCompleter RestartServer<CR>
+	autocmd FileType javascript nnoremap <leader>gto :YcmCompleter GoToDefinition<CR>
+	autocmd FileType javascript nnoremap <leader>gtr :YcmCompleter GoToReferences<<CR>
+	autocmd FileType javascript nnoremap <space>r :YcmCompleter GoToReferences<CR>
+	autocmd FileType javascript nnoremap <leader>tr :YcmCompleter RefactorRename<CR>
+	autocmd FileType javascript nnoremap <leader>tt :YcmCompleter GetType<CR>
+	autocmd FileType javascript nnoremap <leader>tdd :YcmCompleter GetDoc<CR>
+	autocmd FileType javascript nnoremap <leader>fi :YcmCompleter FixIt<CR>
+	autocmd FileType javascript nnoremap <leader>oi :YcmCompleter OrganizeImports<CR>
+	autocmd FileType javascript nnoremap <leader>ycmr :YcmCompleter RestartServer<CR>
+
+	autocmd FileType javascript.jsx nnoremap <leader>gto :YcmCompleter GoToDefinition<CR>
+	autocmd FileType javascript.jsx nnoremap <leader>gtr :YcmCompleter GoToReferences<<CR>
+	autocmd FileType javascript.jsx nnoremap <space>r :YcmCompleter GoToReferences<CR>
+	autocmd FileType javascript.jsx nnoremap <leader>tr :YcmCompleter RefactorRename<CR>
+	autocmd FileType javascript.jsx nnoremap <leader>tt :YcmCompleter GetType<CR>
+	autocmd FileType javascript.jsx nnoremap <leader>tdd :YcmCompleter GetDoc<CR>
+	autocmd FileType javascript.jsx nnoremap <leader>fi :YcmCompleter FixIt<CR>
+	autocmd FileType javascript.jsx nnoremap <leader>oi :YcmCompleter OrganizeImports<CR>
+	autocmd FileType javascript.jsx nnoremap <leader>ycmr :YcmCompleter RestartServer<CR>
+
 	autocmd FileType javascript set shiftwidth=2 tabstop=2 expandtab
 	au FileType javascript nnoremap <leader>jsr :silent exe '%s/;//'<CR>
 	au FileType javascript nnoremap <leader>fff :call FormatJs()<CR>
 	au FileType javascript.jsx nnoremap <leader>fff :call FormatJs()<CR>
 	au FileType javascript nnoremap <leader>ffn :call FormatJsNoSemis()<CR>
-	au FileType javascript vnoremap <leader>fff :!prettier --trailing-comma es5<CR>
+	au FileType javascript vnoremap <leader>fff :!yarn prettier --trailing-comma es5<CR>
 	au FileType javascript vnoremap <leader>ffn :call FormatJsSnippetNoSemis()<CR>
 	au FileType javascript vnoremap <leader>jsb :call FormatJsBeutSnippetNoSemis()<CR>
 	let g:flow#enable = 1

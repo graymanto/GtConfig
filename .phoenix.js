@@ -123,7 +123,8 @@ Window.prototype.nudgeRight = function(factor) {
         pixels = nudgePixels * (factor || 1);
 
     //frame.x += ( frame.x < maxLeft - pixels ) ? pixels : 0;
-    frame.x += (frame.x <= pixels) ? pixels : 0;
+    // frame.x += (frame.x < pixels) ? pixels : 0;
+    frame.x += pixels;
     win.setFrame(frame);
 };
 
@@ -379,6 +380,14 @@ api.bind('space', mash, function() {
     Window.focusedWindow().toggleFullscreen();
 });
 
+api.bind('t', mash, () => {
+    var frame = Window.focusedWindow().screen().frameWithoutDockOrMenu()
+    frame.width *= 0.9
+    frame.height *= 0.9
+    frame.x += frame.width * 0.05
+    frame.y += frame.height * 0.05
+});
+
 api.bind('right', ['ctrl', 'alt'], function() {
     var win = Window.focusedWindow();
     moveToScreen(win, win.screen().nextScreen());
@@ -391,9 +400,6 @@ api.bind('left', ['ctrl', 'alt'], function() {
 var cmdCtrl = ['ctrl', 'cmd'];
 api.bind('t', cmdCtrl, function() {
     App.focusOrStart('iTerm');
-});
-api.bind('v', cmdCtrl, function() {
-    App.focusOrStart('MacVim');
 });
 api.bind('c', cmdCtrl, function() {
     App.focusOrStart('Google Chrome');

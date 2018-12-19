@@ -1,7 +1,7 @@
 alias zshconfig="vim ~/.zshrc"
 alias ohmyzsh="vim ~/.oh-my-zsh"
 
-alias httpserver='python -m SimpleHTTPServer'
+alias httpserver='python -m http.server'
 alias rmdir='rm -rf'
 alias findi='find . -iname'
 alias vcat='vimcat'
