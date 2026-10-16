@@ -73,7 +73,7 @@ map("n", "<leader>ee", ":Bclose<CR>")
 map("n", "<leader>ra", ":bufdo e!<CR>")
 
 map("n", "<leader>mm", ":make<CR>")
-map("n", "<leader>co", ":Copen<CR>")
+map("n", "<leader>co", ":copen<CR>")
 map("n", "<leader>sm", ":messages<CR>")
 
 map("n", "<leader>zw", ":ZoomWin<CR>")
@@ -101,6 +101,11 @@ vim.keymap.set("n", "<leader>rrr", vim.lsp.buf.rename, {
 
 vim.keymap.set("n", "<leader>caa", vim.lsp.buf.code_action, {
     desc = "Code actions",
+})
+
+vim.keymap.set("n", "<leader>gti", vim.lsp.buf.implementation, {
+    desc = "Go to implementation",
+    silent = true,
 })
 
 vim.keymap.set("n", "<space>e", function()
@@ -138,10 +143,12 @@ map("n", "<leader>yy", '"+yy')
 map("n", "<leader>pp", '"+p')
 map("n", "<Space>p", '"+p')
 
+vim.opt.grepprg = "rg --vimgrep --smart-case"
+
 -- Common spelling corrections
 vim.cmd([[
-  iabbrev waht what
-  iabbrev tehn then
+iabbrev waht what
+iabbrev tehn then
 ]])
 
 -- ============================================================
@@ -153,8 +160,8 @@ vim.cmd([[
 --vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
     --callback = function()
         --vim.diagnostic.open_float(nil, { focus = false })
-    --end,
---})
+        --end,
+        --})
 
 -- ============================================================
 -- Custom commands
@@ -164,49 +171,161 @@ vim.cmd([[
 -- original Vimscript configuration.
 
 vim.cmd([[
-  command! -range StripLastChar <line1>,<line2>!rev | cut -c 2- | rev
-  command! -range -nargs=1 StripLastChars <line1>,<line2>!rev | cut -c <f-args>- | rev
-  command! -range -nargs=1 StripFirstChars <line1>,<line2>!cut -c <f-args>-
-  command! -range TrimFront <line1>,<line2>!sed 's/^[ \t]*//g'
-  command! Spacify :.s/\t/    /g
-  command! SpacifyAll :%!expand -t4
-  command! TabifyAll :%!unexpand -t4
-  command! -range AddNumbers :<line1>,<line2>!nl | sed 's/ *//g'
+    command! -range StripLastChar <line1>,<line2>!rev | cut -c 2- | rev
+    command! -range -nargs=1 StripLastChars <line1>,<line2>!rev | cut -c <f-args>- | rev
+    command! -range -nargs=1 StripFirstChars <line1>,<line2>!cut -c <f-args>-
+    command! -range TrimFront <line1>,<line2>!sed 's/^[ \t]*//g'
+    command! Spacify :.s/\t/    /g
+    command! SpacifyAll :%!expand -t4
+    command! TabifyAll :%!unexpand -t4
+    command! -range AddNumbers :<line1>,<line2>!nl | sed 's/ *//g'
 ]])
 
 -- ============================================================
 -- Language-specific settings
 -- ============================================================
-	
+
+-- ============================================================
 -- C# settings
---
+-- ============================================================
+
+local function build(path)
+  vim.cmd("botright split")
+  vim.cmd("terminal dotnet build " .. vim.fn.shellescape(path))
+  vim.cmd("startinsert")
+end
+
+local function find_current_project()
+  local file = vim.fn.expand("%:p")
+  local dir = vim.fn.fnamemodify(file, ":h")
+
+  local projects = vim.fs.find(function(name)
+    return name:match("%.csproj$") ~= nil
+  end, {
+    path = dir,
+    upward = true,
+  })
+
+  return projects[1]
+end
+
+local function pick_and_build(pattern, title)
+  local builtin = require("telescope.builtin")
+  local actions = require("telescope.actions")
+  local action_state = require("telescope.actions.state")
+
+  builtin.find_files({
+    prompt_title = title,
+    cwd = vim.fn.getcwd(),
+    find_command = {
+      "rg", "--files", "--hidden",
+      "-g", pattern,
+      "-g", "!**/bin/**",
+      "-g", "!**/obj/**",
+      "-g", "!**/.git/**",
+    },
+    attach_mappings = function(prompt_bufnr)
+      actions.select_default:replace(function()
+        local entry = action_state.get_selected_entry()
+        if not entry then
+          return
+        end
+
+        local path = entry.path or entry.filename or entry.value
+        actions.close(prompt_bufnr)
+
+        vim.schedule(function()
+          build(path)
+        end)
+      end)
+
+      return true
+    end,
+  })
+end
+
 vim.api.nvim_create_autocmd("FileType", {
     pattern = "cs",
-    callback = function()
+    callback = function(event)
         vim.opt_local.expandtab = true
         vim.opt_local.tabstop = 4
         vim.opt_local.shiftwidth = 4
         vim.opt_local.softtabstop = 4
 
-	vim.keymap.set("n", "<leader>fff", function()
-	    local cmd = { "csharpier", "format", "--write-stdout" }
-	    local input = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
+        local opts = { buffer = event.buf }
 
-	    local output = vim.fn.system(cmd, input)
+        -- Format C# with CSharpier
+        vim.keymap.set("n", "<leader>fff", function()
+            local cmd = { "csharpier", "format", "--write-stdout" }
+            local input = table.concat(
+                vim.api.nvim_buf_get_lines(event.buf, 0, -1, false),
+                "\n"
+            )
 
-	    if vim.v.shell_error ~= 0 then
-		vim.notify("CSharpier failed:\n" .. output, vim.log.levels.ERROR)
-		return
-	    end
+            local output = vim.fn.system(cmd, input)
 
-	    local lines = vim.split(output, "\n", { plain = true })
-	    if lines[#lines] == "" then
-		table.remove(lines)
-	    end
+            if vim.v.shell_error ~= 0 then
+                vim.notify(
+                    "CSharpier failed:\n" .. output,
+                    vim.log.levels.ERROR
+                )
+                return
+            end
 
-	    vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
-	    vim.bo.modified = true
-	end, { buffer = true, desc = "Format C# with CSharpier" })
+            local lines = vim.split(output, "\n", { plain = true })
+            if lines[#lines] == "" then
+                table.remove(lines)
+            end
+
+            vim.api.nvim_buf_set_lines(event.buf, 0, -1, false, lines)
+            vim.bo[event.buf].modified = true
+        end, vim.tbl_extend("force", opts, {
+            desc = "Format C# with CSharpier",
+        }))
+
+        -- Build the current project's nearest .csproj
+        vim.keymap.set("n", "<leader>bbb", function()
+            local project = find_current_project()
+
+            if not project then
+                vim.notify("No .csproj found", vim.log.levels.ERROR)
+                return
+            end
+
+            build(project)
+        end, vim.tbl_extend("force", opts, {
+            desc = "Build current C# project",
+        }))
+
+        -- Pick a project to build
+        vim.keymap.set("n", "<leader>bbp", function()
+            pick_and_build("*.csproj", "Build C# Project")
+        end, vim.tbl_extend("force", opts, {
+            desc = "Pick C# project to build",
+        }))
+
+        -- Pick a solution to build
+        vim.keymap.set("n", "<leader>bbs", function()
+            pick_and_build(
+                { "*.sln", "*.slnx" },
+                "Build Solution"
+            )
+        end, vim.tbl_extend("force", opts, {
+            desc = "Pick C# solution to build",
+        }))
+    end,
+})
+
+
+-- Lua settings
+--
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "lua",
+    callback = function()
+        vim.opt_local.expandtab = true
+        vim.opt_local.tabstop = 4
+        vim.opt_local.shiftwidth = 4
+        vim.opt_local.softtabstop = 4
     end,
 })
 
@@ -215,40 +334,40 @@ vim.api.nvim_create_autocmd("FileType", {
 -- ============================================================
 
 vim.cmd([[
-  call plug#begin()
+call plug#begin()
 
-  Plug 'tpope/vim-sensible'
-  Plug 'tpope/vim-fugitive'
-  Plug 'tpope/vim-unimpaired'
-  Plug 'tpope/vim-surround'
-  Plug 'tpope/vim-ragtag'
-  Plug 'tpope/vim-repeat'
-  Plug 'tpope/vim-dispatch'
-  Plug 'tpope/vim-rsi'
-  Plug 'tpope/vim-endwise'
-  Plug 'tpope/vim-git'
+Plug 'tpope/vim-sensible'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-ragtag'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-dispatch'
+Plug 'tpope/vim-rsi'
+Plug 'tpope/vim-endwise'
+Plug 'tpope/vim-git'
 
-  Plug 'preservim/nerdcommenter'
-  Plug 'preservim/nerdtree'
+Plug 'preservim/nerdcommenter'
+Plug 'preservim/nerdtree'
 
-  Plug 'vim-airline/vim-airline'
-  Plug 'vadimr/bclose.vim'
+Plug 'vim-airline/vim-airline'
+Plug 'vadimr/bclose.vim'
 
-  Plug 'flazz/vim-colorschemes'
-  Plug 'luochen1990/rainbow'
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}
-  Plug 'doums/darcula'
+Plug 'flazz/vim-colorschemes'
+Plug 'luochen1990/rainbow'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'doums/darcula'
 
-  Plug 'nvim-lua/plenary.nvim'
-  Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.2.2' }
-  Plug 'natecraddock/telescope-zf-native.nvim'
-  Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-  Plug 'seblyng/roslyn.nvim'
-  Plug 'nvim-tree/nvim-web-devicons'
-  Plug 'mason-org/mason.nvim'
-  Plug 'mason-org/mason-lspconfig.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.2.2' }
+Plug 'natecraddock/telescope-zf-native.nvim'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'seblyng/roslyn.nvim'
+Plug 'nvim-tree/nvim-web-devicons'
+Plug 'mason-org/mason.nvim'
+Plug 'mason-org/mason-lspconfig.nvim'
 
-  call plug#end()
+call plug#end()
 ]])
 
 -- ============================================================
@@ -256,12 +375,12 @@ vim.cmd([[
 -- ============================================================
 
 vim.g.coc_global_extensions = {
-    "coc-tsserver",
-    "coc-json",
-    "coc-pyright",
-    "coc-rust-analyzer",
-    "coc-go",
-    "coc-clangd",
+    --"coc-tsserver",
+    --"coc-json",
+    --"coc-pyright",
+    --"coc-rust-analyzer",
+    --"coc-go",
+    --"coc-clangd",
 }
 
 vim.opt.statusline:prepend("%{coc#status()}")
@@ -342,7 +461,7 @@ map("n", "<Space>u", function()
         no_ignore = false,
     })
 end, {
-    desc = "Find files",
+desc = "Find files",
 })
 
 -- Optional extra Telescope mappings
@@ -376,13 +495,13 @@ require("mason").setup({
 
 require("mason-lspconfig").setup({
     ensure_installed = {
-	"pyright",
-	"rust_analyzer",
-	"gopls",
-	"clangd",
-	"jsonls",
-	"lua_ls",
-	--"roslyn",
+        --"pyright",
+        "rust_analyzer",
+        "gopls",
+        --"clangd",
+        "jsonls",
+        --"lua_ls",
+        --"roslyn",
     },
 })
 
@@ -414,7 +533,8 @@ vim.lsp.config("roslyn", {
 -- ============================================================
 -- C# / Roslyn
 -- ============================================================
-vim.lsp.enable("roslyn")-- ============================================================
+
+vim.lsp.enable("roslyn")
 
 require("roslyn").setup({
     -- Keep the defaults initially.
@@ -509,3 +629,16 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 })
 
 set_csharp_highlights()
+
+-- ============================================================
+-- Temporary fix for this version of Neovim (0.9.0) where semantic tokens cause 100% CPU usage in insert mode
+-- ============================================================
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client then
+      -- Strips semantic tokens globally to prevent the 100% CPU insert mode hang
+      client.server_capabilities.semanticTokensProvider = nil
+    end
+  end,
+})
